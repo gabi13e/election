@@ -263,8 +263,93 @@
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <p>© 2026 Association Of All Achievers — SJPIICD &nbsp;|&nbsp; <a href="mailto:AssociationOfAllAchievers@sjp2cd.edu.ph">AssociationOfAllAchievers@sjp2cd.edu.ph</a></p>
+    <div class="footer-inner">
+
+      <!-- Brand -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="img/AAA.png" alt="AAA Logo" />
+        </div>
+        <div>
+          <p class="footer-org">Association Of All Achievers</p>
+          <p class="footer-school">St. John Paul II College Of Davao City</p>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-col">
+        <p class="footer-heading">Quick Links</p>
+        <ul class="footer-links">
+          <li><a href="#" onclick="goToStep('stepLanding'); return false;">Home</a></li>
+          <li><a href="#" onclick="goToStep('stepCandidates'); return false;">View Candidates</a></li>
+          <li><a href="#" onclick="goToStep('stepVerify'); return false;">Vote Now</a></li>
+        </ul>
+      </div>
+
+      <!-- Election Guidelines -->
+      <div class="footer-col">
+        <p class="footer-heading">Election Guidelines</p>
+        <ul class="footer-links">
+          <li><a href="#" onclick="openGuidelinesModal(); return false;">Read Election Rules</a></li>
+          <li><span class="footer-text footer-icon-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            April 29, 2026
+          </span></li>
+          <li><span class="footer-text footer-icon-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            8:00 AM – 11:59 PM
+          </span></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="footer-col">
+        <p class="footer-heading">Contact</p>
+        <ul class="footer-links">
+          <li><a href="mailto:AssociationOfAllAchievers@sjp2cd.edu.ph">AssociationOfAllAchievers@sjp2cd.edu.ph</a></li>
+          <li><span class="footer-text">For concerns, contact the Election Committee.</span></li>
+          <li>
+            <a href="https://www.facebook.com/profile.php?id=61577007655393" target="_blank" rel="noopener noreferrer" class="fb-link">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              Follow us on Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <p>© 2026 Association Of All Achievers · St. John Paul II College Of Davao City. All rights reserved.</p>
+      <p class="footer-privacy">
+        🔒 <strong>Privacy Notice:</strong> Personal information collected on this platform (Student ID and school email) is used solely for voter verification and election integrity purposes. Data is not shared with third parties.
+      </p>
+    </div>
   </footer>
+
+  <!-- ELECTION GUIDELINES MODAL -->
+  <div class="modal-overlay" id="guidelinesOverlay" onclick="closeGuidelinesModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width:560px;">
+      <button class="modal-close" onclick="closeGuidelinesModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="padding: 36px 32px;">
+        <h2 style="font-size:1.3rem; font-weight:700; color:var(--text-primary); margin-bottom:6px;">Election Guidelines</h2>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:24px;">AAA Officers Election AY 2026–2027</p>
+        <ol class="guidelines-list">
+          <li>Only registered AAA members with a valid Student ID and school email (<strong>@sjp2cd.edu.ph</strong>) are eligible to vote.</li>
+          <li>Each voter may cast their vote <strong>only once</strong>. Duplicate voting is strictly prohibited.</li>
+          <li>Voters must select <strong>one candidate per position</strong>. Incomplete ballots will not be accepted.</li>
+          <li>Once submitted, votes are <strong>final and cannot be changed</strong>.</li>
+          <li>Campaigning, vote-buying, and any form of electoral fraud are strictly prohibited.</li>
+          <li>All personal data collected is used solely for voter verification and will not be shared with third parties.</li>
+          <li>Results will be announced by the Election Committee after the polls close on <strong>April 29, 2026 at 11:59 PM</strong>.</li>
+          <li>Any disputes or concerns must be raised with the Election Committee within 24 hours after the polls close.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
 
   <!-- CANDIDATE DETAIL MODAL -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">

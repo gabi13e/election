@@ -584,3 +584,13 @@ window.addEventListener('scroll', () => {
     btn.classList.remove('visible');
   }
 });
+
+// ===== ELECTION GUIDELINES MODAL =====
+function openGuidelinesModal() {
+  document.getElementById('guidelinesOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuidelinesModal() {
+  document.getElementById('guidelinesOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
