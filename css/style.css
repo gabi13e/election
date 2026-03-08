@@ -250,7 +250,8 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--text);
 /* MODAL */
 .modal-overlay { position: fixed; inset: 0; background: rgba(200,210,220,.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal-card { background: var(--bg); border-radius: var(--radius-xl); max-width: 480px; width: 100%; box-shadow: var(--neu-raised-lg); position: relative; transform: scale(.88) translateY(20px); transition: transform .35s cubic-bezier(.34,1.56,.64,1); max-height: 90vh; overflow-y: auto; }
+.modal-card { background: var(--bg); border-radius: var(--radius-xl); max-width: 480px; width: 100%; box-shadow: var(--neu-raised-lg); position: relative; transform: scale(.88) translateY(20px); transition: transform .35s cubic-bezier(.34,1.56,.64,1); max-height: 90vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.modal-card::-webkit-scrollbar { display: none; }
 .modal-overlay.open .modal-card { transform: scale(1) translateY(0); }
 .modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; background: var(--bg); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 3px 3px 7px var(--shadow-dark), -2px -2px 5px rgba(255,255,255,.5); transition: var(--transition); z-index: 10; }
 .modal-close:hover { box-shadow: 4px 4px 9px var(--shadow-dark), -3px -3px 7px rgba(255,255,255,.55); }
@@ -458,3 +459,54 @@ button.logo:active {
 button.logo { background: none; border: none; cursor: pointer; padding: 6px 10px 6px 0; border-radius: var(--radius-sm); transition: var(--transition); }
 button.logo:hover { opacity: .8; transform: scale(.97); }
 button.logo:active { transform: scale(.94); }
+
+/* ======= PARTY FILTER BUTTONS ======= */
+.party-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.party-filter-btn {
+  padding: 8px 20px;
+  border-radius: 30px;
+  border: none;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--neu-flat);
+  transition: var(--transition);
+}
+.party-filter-btn:hover {
+  box-shadow: var(--neu-raised);
+  color: var(--primary);
+}
+.party-filter-btn.active {
+  box-shadow: var(--neu-pressed);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ======= PARTY BADGE ON CARD ======= */
+.party-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  background: color-mix(in srgb, var(--party-color, #4a90d9) 12%, var(--bg));
+  color: var(--party-color, #4a90d9);
+  box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
+}
+.party-badge.party-independent {
+  --party-color: #888;
+  background: color-mix(in srgb, #888 10%, var(--bg));
+  color: #777;
+}

@@ -148,37 +148,63 @@ async function loadCandidates() {
 }
 
 // ===== RENDER CANDIDATES (preview mode) =====
+let activeFilter = 'all'; // 'all', 'independent', or party name
+
 function renderCandidates(showVoteButton = false) {
   const wrapper = document.getElementById('candidatesDisplay');
   const footer = document.getElementById('candidatesFooter');
   const backBtn = document.getElementById('candidatesBackBtn');
 
-  // If no candidates yet, load them
   if (STATE.candidates.length === 0) {
     loadCandidates().then(() => renderCandidates(showVoteButton));
     return;
   }
 
-  // Back destination
   backBtn.onclick = () => goToStep(STATE.isVerified ? 'stepBallot' : 'stepLanding');
-
-  // Show proceed button only for verified voters
   if (footer) footer.style.display = STATE.isVerified ? 'block' : 'none';
 
-  let html = '';
-  STATE.positions.forEach(position => {
-    const positionCandidates = STATE.candidates.filter(c => c.position === position);
-    html += `
-      <div class="position-group">
-        <div class="position-label">${position}</div>
-        <div class="candidate-cards">
-          ${positionCandidates.map(c => renderCandidateCard(c)).join('')}
+  // Collect unique parties
+  const parties = [...new Set(STATE.candidates.map(c => c.party).filter(p => p && p.trim() !== ''))];
+  const hasIndependent = STATE.candidates.some(c => !c.party || c.party.trim() === '');
+
+  // Filter buttons HTML
+  let filterHtml = `<div class="party-filters">
+    <button class="party-filter-btn ${activeFilter === 'all' ? 'active' : ''}" onclick="setPartyFilter('all')">All</button>
+    ${parties.map(p => `<button class="party-filter-btn ${activeFilter === p ? 'active' : ''}" onclick="setPartyFilter('${p}')">${p}</button>`).join('')}
+    ${hasIndependent ? `<button class="party-filter-btn ${activeFilter === 'independent' ? 'active' : ''}" onclick="setPartyFilter('independent')">Independent</button>` : ''}
+  </div>`;
+
+  // Filter candidates
+  let filtered = STATE.candidates;
+  if (activeFilter === 'independent') filtered = STATE.candidates.filter(c => !c.party || c.party.trim() === '');
+  else if (activeFilter !== 'all') filtered = STATE.candidates.filter(c => c.party === activeFilter);
+
+  // Group by position — always follow original position order
+  const positions = STATE.positions.filter(p => filtered.some(c => c.position === p));
+  let html = filterHtml;
+
+  if (filtered.length === 0) {
+    html += `<div class="loading-state"><p>No candidates found for this filter.</p></div>`;
+  } else {
+    positions.forEach(position => {
+      const positionCandidates = filtered.filter(c => c.position === position);
+      html += `
+        <div class="position-group">
+          <div class="position-label">${position}</div>
+          <div class="candidate-cards">
+            ${positionCandidates.map(c => renderCandidateCard(c)).join('')}
+          </div>
         </div>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
 
   wrapper.innerHTML = html;
+}
+
+function setPartyFilter(filter) {
+  activeFilter = filter;
+  renderCandidates();
 }
 
 function renderCandidateCard(c) {
@@ -186,6 +212,9 @@ function renderCandidateCard(c) {
   const photo = c.photo_url
     ? `<img src="${c.photo_url}" alt="${c.full_name}" onerror="this.parentElement.innerHTML='<div class=&quot;candidate-photo-placeholder&quot;>${initials}</div>'" />`
     : `<div class="candidate-photo-placeholder">${initials}</div>`;
+  const partyHtml = c.party && c.party.trim() !== ''
+    ? `<span class="party-badge" style="--party-color:${getPartyColor(c.party)}">🏛 ${c.party}</span>`
+    : `<span class="party-badge party-independent">Independent</span>`;
 
   return `
     <div class="candidate-card" onclick="openCandidateModal('${c.candidate_id}')">
@@ -193,6 +222,7 @@ function renderCandidateCard(c) {
       <div class="candidate-info">
         <p class="candidate-name">${c.full_name}</p>
         <span class="candidate-position-badge">${c.position}</span>
+        ${partyHtml}
         <p class="candidate-meta">${c.course} · ${c.year_level}</p>
         <p class="candidate-platform-preview">${c.platform}</p>
       </div>
@@ -210,12 +240,18 @@ function openCandidateModal(candidateId) {
     ? `<img class="modal-photo" src="${c.photo_url}" alt="${c.full_name}" onerror="this.outerHTML='<div class=&quot;modal-photo-placeholder&quot;>${initials}</div>'" />`
     : `<div class="modal-photo-placeholder">${initials}</div>`;
 
+  const partyModalHtml = c.party && c.party.trim() !== ''
+    ? `<span class="party-badge" style="--party-color:${getPartyColor(c.party)}">🏛 ${c.party}</span>`
+    : `<span class="party-badge party-independent">Independent</span>`;
+
   document.getElementById('modalContent').innerHTML = `
     ${photoHtml}
     <div class="modal-body">
       <span class="modal-position-badge">${c.position}</span>
       <h2 class="modal-name">${c.full_name}</h2>
       <p class="modal-course">${c.course} · ${c.year_level}</p>
+      ${partyModalHtml}
+      <br/>
       <p class="modal-section-label">Platform</p>
       <p class="modal-platform">${c.platform}</p>
     </div>
@@ -445,6 +481,17 @@ function generateRefNumber() {
     + String(now.getDate()).padStart(2, '0');
   const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
   return `AAA-${ts}-${rand}`;
+}
+
+// Party color map — assign consistent colors per party name
+const PARTY_COLORS = {};
+const PARTY_COLOR_PALETTE = ['#4a90d9','#e07b39','#27ae60','#8e44ad','#e74c3c','#16a085','#d4ac0d'];
+function getPartyColor(party) {
+  if (!PARTY_COLORS[party]) {
+    const idx = Object.keys(PARTY_COLORS).length % PARTY_COLOR_PALETTE.length;
+    PARTY_COLORS[party] = PARTY_COLOR_PALETTE[idx];
+  }
+  return PARTY_COLORS[party];
 }
 
 function getInitials(name) {
