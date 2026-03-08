@@ -525,7 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== BACK TO TOP =====
 function backToTop() {
-  goToStep('stepLanding');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
