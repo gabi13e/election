@@ -9,10 +9,15 @@ const STATE = {
   positions: [],
   votes: {},        // { position: candidate_id }
   isVerified: false,
+  currentStep: 'stepLanding',
+  previousStep: null,
 };
 
 // ===== NAVIGATION =====
 function goToStep(stepId) {
+  STATE.previousStep = STATE.currentStep;
+  STATE.currentStep = stepId;
+
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(stepId);
   if (target) {
@@ -160,7 +165,15 @@ function renderCandidates(showVoteButton = false) {
     return;
   }
 
-  backBtn.onclick = () => goToStep(STATE.isVerified ? 'stepBallot' : 'stepLanding');
+  backBtn.onclick = () => {
+    if (STATE.previousStep === 'stepBallot') {
+      goToStep('stepBallot');
+    } else if (STATE.previousStep === 'stepVerify') {
+      goToStep('stepVerify');
+    } else {
+      goToStep('stepLanding');
+    }
+  };
   if (footer) footer.style.display = STATE.isVerified ? 'block' : 'none';
 
   // Collect unique parties
