@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voter Registration — AAA Election 2026</title>
+  <link rel="icon" type="image/png" href="img/AAA.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="index.html" title="Back to Election Portal" style="text-decoration:none;">
+        <div class="logo-badge">
+          <img src="img/AAA.png" alt="AAA Logo" class="logo-img" />
+        </div>
+        <div class="logo-text">
+          <span class="org-name">Association Of All Achievers</span>
+          <span class="election-label">Voter Registration</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="step active">
+      <div class="container">
+        <div class="step-header">
+          <a class="back-btn" href="index.html" style="text-decoration:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Portal
+          </a>
+          <div class="step-indicator">
+            <span class="si-num">01</span>
+            <span class="si-label">Voter Registration</span>
+          </div>
+        </div>
+
+        <div class="verify-layout">
+          <!-- Left info panel -->
+          <div class="verify-info">
+            <h2 class="section-title">Register to Vote</h2>
+            <p class="section-desc">Fill in your details to join the voter masterlist. Once registered, you will be eligible to vote on election day.</p>
+            <div class="info-rules">
+              <div class="rule-item">
+                <div class="rule-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <p>Must be an AAA member with a valid Student ID</p>
+              </div>
+              <div class="rule-item">
+                <div class="rule-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <p>School email must end with @sjp2cd.edu.ph</p>
+              </div>
+              <div class="rule-item">
+                <div class="rule-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M20 12c0 4.418-3.582 8-8 8S4 16.418 4 12 7.582 4 12 4s8 3.582 8 8z"/></svg>
+                </div>
+                <p>Registration is open at any time before the election</p>
+              </div>
+              <div class="rule-item">
+                <div class="rule-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <p>Election day: <strong>April 29, 2026</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right form card -->
+          <div class="verify-form-card">
+            <div class="form-card-header">
+              <div class="form-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              </div>
+              <div><h3>New Voter Registration</h3><p>Enter your information below</p></div>
+            </div>
+
+            <div class="form-group">
+              <label for="regStudentId">Student ID</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a1 1 0 0 0-1 1v3h10V4a1 1 0 0 0-1-1z"/></svg>
+                <input type="text" id="regStudentId" placeholder="e.g. 2021-00123" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regStudentIdError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regLastName">Last Name</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="regLastName" placeholder="Dela Cruz" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regLastNameError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regFirstName">First Name</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="regFirstName" placeholder="Juan" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regFirstNameError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regEmail">School Email</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input type="email" id="regEmail" placeholder="yourname@sjp2cd.edu.ph" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regEmailError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regCourse">Course</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <input type="text" id="regCourse" placeholder="e.g. BSIT" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regCourseError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regYearLevel">Year Level</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <input type="text" id="regYearLevel" placeholder="e.g. 3rd Year" autocomplete="off" />
+              </div>
+              <span class="field-error" id="regYearLevelError"></span>
+            </div>
+
+            <div class="form-message" id="regMessage"></div>
+
+            <button class="btn-primary btn-full" id="regBtn" onclick="submitRegistration()">
+              <span id="regBtnText">Register</span>
+              <div class="btn-spinner hidden" id="regSpinner"></div>
+            </button>
+
+            <p style="text-align:center; margin-top:18px; font-size:13px; color:var(--text-muted);">
+              Already registered? <a href="index.html" style="color:var(--primary); font-weight:600;">Go to Election Portal</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="img/AAA.png" alt="AAA Logo" />
+        </div>
+        <div>
+          <p class="footer-org">Association Of All Achievers</p>
+          <p class="footer-school">St. John Paul II College Of Davao City</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <p class="footer-heading">Quick Links</p>
+        <ul class="footer-links">
+          <li><a href="index.html">Election Portal</a></li>
+          <li><a href="index.html#stepVerify" onclick="sessionStorage.setItem('goto','stepVerify')">Vote Now</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-heading">Contact</p>
+        <ul class="footer-links">
+          <li><a href="mailto:AssociationOfAllAchievers@sjp2cd.edu.ph">AssociationOfAllAchievers@sjp2cd.edu.ph</a></li>
+          <li><span class="footer-text">For concerns, contact the Election Committee.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Association Of All Achievers · St. John Paul II College Of Davao City. All rights reserved.</p>
+      <p class="footer-privacy">
+        🔒 <strong>Privacy Notice:</strong> Personal information collected on this platform is used solely for voter verification and election integrity purposes. Data is not shared with third parties.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    const ALLOWED_EMAIL_DOMAIN = CONFIG.ALLOWED_EMAIL_DOMAIN;
+
+    function showFieldError(id, msg) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = msg;
+      const inputId = id.replace('Error', '');
+      const input = document.getElementById(inputId);
+      if (input) input.classList.add('error');
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+    }
+
+    function showFormMessage(id, msg, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.className = `form-message ${type}`;
+      el.style.display = 'block';
+    }
+
+    function submitRegistration() {
+      clearErrors();
+
+      const studentId = document.getElementById('regStudentId').value.trim();
+      const lastName  = document.getElementById('regLastName').value.trim();
+      const firstName = document.getElementById('regFirstName').value.trim();
+      const email     = document.getElementById('regEmail').value.trim().toLowerCase();
+      const course    = document.getElementById('regCourse').value.trim();
+      const yearLevel = document.getElementById('regYearLevel').value.trim();
+
+      let hasError = false;
+      if (!studentId)  { showFieldError('regStudentIdError', 'Student ID is required.');  hasError = true; }
+      if (!lastName)   { showFieldError('regLastNameError',  'Last name is required.');   hasError = true; }
+      if (!firstName)  { showFieldError('regFirstNameError', 'First name is required.');  hasError = true; }
+      if (!email) {
+        showFieldError('regEmailError', 'Email is required.'); hasError = true;
+      } else if (!email.endsWith(ALLOWED_EMAIL_DOMAIN)) {
+        showFieldError('regEmailError', `Email must end with ${ALLOWED_EMAIL_DOMAIN}`); hasError = true;
+      }
+      if (!course)    { showFieldError('regCourseError',    'Course is required.');      hasError = true; }
+      if (!yearLevel) { showFieldError('regYearLevelError', 'Year level is required.');  hasError = true; }
+      if (hasError) return;
+
+      setLoading(true);
+      showFormMessage('regMessage', 'Submitting your registration...', 'info');
+
+      const url = `${CONFIG.APPS_SCRIPT_URL}?action=registerVoter` +
+        `&student_id=${encodeURIComponent(studentId)}` +
+        `&last_name=${encodeURIComponent(lastName)}` +
+        `&first_name=${encodeURIComponent(firstName)}` +
+        `&email=${encodeURIComponent(email)}` +
+        `&course=${encodeURIComponent(course)}` +
+        `&year_level=${encodeURIComponent(yearLevel)}`;
+
+      fetch(url)
+        .then(r => r.json())
+        .then(result => {
+          if (result.success) {
+            showFormMessage('regMessage', result.message, 'success');
+            ['regStudentId','regLastName','regFirstName','regEmail','regCourse','regYearLevel']
+              .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+          } else {
+            showFormMessage('regMessage', result.message, 'error');
+          }
+        })
+        .catch(() => showFormMessage('regMessage', 'Connection error. Please try again.', 'error'))
+        .finally(() => setLoading(false));
+    }
+
+    function setLoading(isLoading) {
+      const btn     = document.getElementById('regBtn');
+      const text    = document.getElementById('regBtnText');
+      const spinner = document.getElementById('regSpinner');
+      btn.disabled = isLoading;
+      text.textContent = isLoading ? 'Registering...' : 'Register';
+      spinner.classList.toggle('hidden', !isLoading);
+    }
+  </script>
+</body>
+</html>

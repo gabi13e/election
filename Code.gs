@@ -18,7 +18,40 @@ const SHEETS = {
   VOTERS: "Voters",
   CANDIDATES: "Candidates",
   VOTES: "Votes",
+  SETTINGS: "Settings",
 };
+
+// ===== SETTINGS HELPERS =====
+function getSetting(key) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEETS.SETTINGS);
+  const data = sheet.getDataRange().getValues();
+  const row = data.find(r => r[0] === key);
+  return row ? row[1] : null;
+}
+
+function setSetting(key, value) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEETS.SETTINGS);
+  const data = sheet.getDataRange().getValues();
+  for (let i = 0; i < data.length; i++) {
+    if (data[i][0] === key) {
+      sheet.getRange(i + 1, 2).setValue(value);
+      return;
+    }
+  }
+}
+
+function isValidAdminToken(token) {
+  if (!token) return false;
+  try {
+    const decoded = Utilities.newBlob(Utilities.base64Decode(token)).getDataAsString();
+    const adminUser = getSetting("admin_username");
+    return decoded.startsWith(adminUser + ":");
+  } catch (e) {
+    return false;
+  }
+}
 
 // ===== MAIN ENTRY POINT =====
 function doGet(e) {
@@ -30,6 +63,21 @@ function doGet(e) {
       result = verifyVoter(e.parameter.student_id, e.parameter.email);
     } else if (action === "getCandidates") {
       result = getCandidates();
+    } else if (action === "registerVoter") {
+      result = registerVoter(
+        e.parameter.student_id,
+        e.parameter.last_name,
+        e.parameter.first_name,
+        e.parameter.email,
+        e.parameter.course,
+        e.parameter.year_level
+      );
+    } else if (action === "adminLogin") {
+      result = adminLogin(e.parameter.username, e.parameter.password);
+    } else if (action === "getVoters") {
+      result = getVoters(e.parameter.token);
+    } else if (action === "setElectionStatus") {
+      result = setElectionStatus(e.parameter.token, e.parameter.active);
     } else {
       result = { success: false, message: "Unknown action." };
     }
@@ -62,10 +110,115 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// ===== REGISTER VOTER =====
+function registerVoter(studentId, lastName, firstName, email, course, yearLevel) {
+  if (!studentId || !lastName || !firstName || !email) {
+    return { success: false, message: "All required fields must be filled in." };
+  }
+
+  if (!email.toLowerCase().endsWith("@sjp2cd.edu.ph")) {
+    return { success: false, message: "Email must end with @sjp2cd.edu.ph." };
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEETS.VOTERS);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const rows = data.slice(1);
+
+  const idIdx    = headers.indexOf("student_id");
+  const emailIdx = headers.indexOf("school_email");
+
+  const duplicate = rows.find(r =>
+    r[idIdx].toString().trim() === studentId.trim() ||
+    r[emailIdx].toString().trim().toLowerCase() === email.trim().toLowerCase()
+  );
+  if (duplicate) {
+    return { success: false, message: "A voter with this Student ID or email is already registered." };
+  }
+
+  const fullName = firstName.trim() + " " + lastName.trim();
+  sheet.appendRow([
+    studentId.trim(),
+    fullName,
+    email.trim().toLowerCase(),
+    (course || "").trim(),
+    (yearLevel || "").trim(),
+    true,
+    false,
+    "",
+  ]);
+
+  return { success: true, message: "Registration successful! You are now in the voter masterlist." };
+}
+
+// ===== ADMIN LOGIN =====
+function adminLogin(username, password) {
+  if (!username || !password) {
+    return { success: false, message: "Credentials required." };
+  }
+  const storedUser = getSetting("admin_username");
+  const storedPass = getSetting("admin_password");
+
+  if (username.trim() === storedUser && password.trim() === storedPass) {
+    const token = Utilities.base64Encode(username + ":" + Date.now());
+    return { success: true, token: token };
+  }
+  return { success: false, message: "Invalid username or password." };
+}
+
+// ===== GET VOTERS (admin) =====
+function getVoters(token) {
+  if (!isValidAdminToken(token)) {
+    return { success: false, message: "Unauthorized." };
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEETS.VOTERS);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const rows = data.slice(1);
+
+  const voters = rows
+    .filter(r => r[0] !== "")
+    .map(r => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = r[i]; });
+      return obj;
+    });
+
+  const electionActive = getSetting("election_active");
+  const total    = voters.length;
+  const voted    = voters.filter(v => v.has_voted === true || v.has_voted === "TRUE").length;
+
+  return {
+    success: true,
+    election_active: (electionActive === true || electionActive === "TRUE"),
+    stats: { total, voted, not_voted: total - voted },
+    voters,
+  };
+}
+
+// ===== SET ELECTION STATUS (admin) =====
+function setElectionStatus(token, active) {
+  if (!isValidAdminToken(token)) {
+    return { success: false, message: "Unauthorized." };
+  }
+  const val = (active === "true" || active === true);
+  setSetting("election_active", val);
+  return { success: true, election_active: val };
+}
+
 // ===== VERIFY VOTER =====
 function verifyVoter(studentId, email) {
   if (!studentId || !email) {
     return { success: false, message: "Missing student ID or email." };
+  }
+
+  // Check if election is currently open
+  const electionActive = getSetting("election_active");
+  if (electionActive !== true && electionActive !== "TRUE") {
+    return { success: false, message: "The election is not currently open. Please check back during the election period." };
   }
 
   // Validate email domain
