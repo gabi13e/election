@@ -74,8 +74,8 @@
                 <span>Verify &amp; Vote</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
-              <button class="btn-ghost" id="viewCandidatesBtn" onclick="handleViewCandidates()">View Candidates</button>
-              <button class="btn-ghost" type="button" id="registerNowBtn" onclick="handleRegisterNow()">Register</button>
+              <button class="btn-ghost" id="viewCandidatesBtn" onclick="handleViewCandidates()" style="display:none">View Candidates</button>
+              <button class="btn-ghost" type="button" id="registerNowBtn" onclick="handleRegisterNow()" style="display:none">Register</button>
             </div>
           </div><!-- end hero-text -->
 
@@ -640,9 +640,9 @@
         <p class="footer-heading">Quick Links</p>
         <ul class="footer-links">
           <li><a href="#" onclick="goToStep('stepLanding'); return false;">Home</a></li>
-          <li><a href="#" id="footerCandidatesLink" onclick="handleViewCandidates(); return false;">View Candidates</a></li>
+          <li><a href="#" id="footerCandidatesLink" onclick="handleViewCandidates(); return false;" style="display:none">View Candidates</a></li>
           <li><a href="#" onclick="goToStep('stepVerify'); return false;">Vote Now</a></li>
-          <li><a href="register.html" id="footerRegisterLink">Register to Vote</a></li>
+          <li><a href="register.html" id="footerRegisterLink" style="display:none">Register to Vote</a></li>
         </ul>
       </div>
 

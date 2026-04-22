@@ -675,12 +675,12 @@ function handleVoteNow() {
 }
 
 function handleViewCandidates() {
-  if (STATE.candidatesVisible === false) return;
+  if (STATE.candidatesVisible === null || STATE.candidatesVisible === false) return;
   goToStep('stepCandidates');
 }
 
 function handleRegisterNow() {
-  if (STATE.registrationOpen === false) return;
+  if (STATE.registrationOpen === null || STATE.registrationOpen === false) return;
   window.location.href = 'register.html';
 }
 
