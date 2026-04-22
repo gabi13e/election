@@ -690,12 +690,11 @@ body.admin-mode #stepAdminDashboard { flex: 1; }
   gap: 14px;
 }
 .admin-topbar-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: contain;
-  box-shadow: var(--neu-flat);
-  padding: 4px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--neu-raised);
   background: var(--bg);
 }
 .admin-topbar-title {
@@ -754,7 +753,55 @@ body.admin-mode #stepAdminDashboard { flex: 1; }
   top: 68px;
   height: calc(100vh - 68px);
   z-index: 40;
+  transition: width .25s cubic-bezier(.4, 0, .2, 1);
 }
+.admin-sidebar.collapsed { width: 72px; }
+.admin-sidebar.collapsed .admin-sidebar-item span { display: none; }
+.admin-sidebar.collapsed .admin-sidebar-item {
+  justify-content: center;
+  padding: 12px;
+  gap: 0;
+}
+.admin-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, color .15s, background .15s;
+}
+.admin-sidebar-toggle svg {
+  flex-shrink: 0;
+  transition: transform .25s cubic-bezier(.4, 0, .2, 1);
+}
+.admin-sidebar-toggle:hover {
+  color: var(--primary);
+  background: rgba(74,144,217,.07);
+}
+.admin-sidebar:hover .admin-sidebar-toggle,
+.admin-sidebar:focus-within .admin-sidebar-toggle {
+  opacity: 1;
+  pointer-events: auto;
+}
+.admin-sidebar.collapsed .admin-sidebar-toggle {
+  justify-content: center;
+  padding: 8px;
+  gap: 0;
+}
+.admin-sidebar.collapsed .admin-sidebar-toggle span { display: none; }
+.admin-sidebar.collapsed .admin-sidebar-toggle svg { transform: rotate(180deg); }
 
 .admin-sidebar-nav {
   display: flex;
@@ -947,7 +994,8 @@ body.admin-mode #stepAdminDashboard { flex: 1; }
   .admin-topbar { padding: 0 16px; height: 58px; }
   .admin-topbar-sub { display: none; }
   .admin-body { flex-direction: column; }
-  .admin-sidebar {
+  .admin-sidebar,
+  .admin-sidebar.collapsed {
     width: 100%;
     height: auto;
     position: static;
@@ -955,6 +1003,13 @@ body.admin-mode #stepAdminDashboard { flex: 1; }
     box-shadow: 0 3px 12px var(--shadow-dark), 0 1px 0 var(--shadow-light);
     overflow-y: hidden;
     overflow-x: auto;
+  }
+  .admin-sidebar-toggle { display: none; }
+  .admin-sidebar.collapsed .admin-sidebar-item span { display: inline; }
+  .admin-sidebar.collapsed .admin-sidebar-item {
+    justify-content: flex-start;
+    padding: 10px 14px;
+    gap: 8px;
   }
   .admin-sidebar-nav {
     flex-direction: row;

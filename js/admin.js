@@ -247,6 +247,27 @@ function adminAccess() {
 
 function enterAdminMode() {
   document.body.classList.add('admin-mode');
+  applyAdminSidebarCollapsed(localStorage.getItem('adminSidebarCollapsed') === '1');
+}
+
+function toggleAdminSidebar() {
+  const sidebar = document.getElementById('adminSidebar');
+  if (!sidebar) return;
+  const next = !sidebar.classList.contains('collapsed');
+  applyAdminSidebarCollapsed(next);
+  localStorage.setItem('adminSidebarCollapsed', next ? '1' : '0');
+}
+
+function applyAdminSidebarCollapsed(collapsed) {
+  const sidebar = document.getElementById('adminSidebar');
+  const toggle = document.getElementById('adminSidebarToggle');
+  if (!sidebar) return;
+  sidebar.classList.toggle('collapsed', collapsed);
+  if (toggle) {
+    const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('title', label);
+  }
 }
 
 function exitAdminMode() {
