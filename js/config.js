@@ -6,7 +6,7 @@
 const CONFIG = {
   // 🔗 IMPORTANT: Replace this with your deployed Google Apps Script Web App URL
   // After deploying (see README), copy the /exec URL here
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycby0jVBuZJ3BZu6Pam-0GH6zI0HrF7jHKrni5TooB5QX1d1ihemV-ns_seHgVskwdW9cRg/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxMirwqB12b3of3SMGuH8LuzeLagKcgi2Mpw7t3VHsR9rsm_7W4MfOzoYhSI0kz1dWn/exec",
 
   // Election details (also editable in index.html)
   ELECTION_TITLE: "AAA Officers Election 2025",

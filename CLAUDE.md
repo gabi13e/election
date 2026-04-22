@@ -40,11 +40,15 @@ The app is a single `index.html` with six `<section>` "steps" (only one visible 
 
 ### Google Sheets schema
 
-**Voters sheet** columns: `student_id, full_name, school_email, course, year_level, eligible, has_voted, voted_at`
+**Registered Voters sheet** columns: `student_id, full_name, school_email`
 
-**Candidates sheet** columns: `candidate_id, full_name, position, course, year_level, party, platform, photo_url`
+**Voters sheet** columns: `student_id, full_name, school_email, course, year_level, scholarship_type, eligible, has_voted, voted_at`
+
+**Candidates sheet** columns: `candidate_id, full_name, position, course, year_level, platform, photo_url, party`
 
 **Votes sheet** columns: `vote_id, student_id, position, candidate_id, timestamp, reference_number` (auto-populated)
+
+**Settings sheet** columns: `key, value`
 
 ### Backend (Code.gs) notes
 

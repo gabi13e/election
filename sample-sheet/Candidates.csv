@@ -1,11 +1,11 @@
-candidate_id,full_name,position,course,year_level,party,platform,photo_url
-C001,Ramon Aquino,President,BSIT,4th Year,Lakbay,"My vision is to strengthen the academic programs of our organization, build stronger industry partnerships, and ensure every member has access to quality learning opportunities.",
-C002,Clarissa Flores,President,BSCS,4th Year,Bayan,"As your President, I will focus on innovation and inclusivity. I want to launch new tech-driven initiatives, expand our alumni network, and create mentorship programs.",
-C003,Mark Villanueva,Vice President,BSCS,3rd Year,Lakbay,"I will assist the President in all organizational matters and act as a strong liaison between the officers and members.",
-C004,Joanna Lim,Vice President,BSIT,3rd Year,,"Dedicated to serving every AAA member with integrity and passion. I will create structured feedback channels and ensure that every voice is heard.",
-C005,Patricia Cruz,Secretary,BSBA,2nd Year,Bayan,"Organized, reliable, and detail-oriented - I will keep all organizational records accurate and accessible.",
-C006,Miguel Tan,Treasurer,BSBA,3rd Year,Lakbay,"Financial transparency is non-negotiable. I will maintain accurate financial records and publish regular budget reports.",
-C007,Sophia Ramos,Treasurer,BSIT,2nd Year,,"I believe in responsible stewardship of our organization's resources. I will introduce digital financial tracking.",
-C008,Kenneth Bautista,Auditor,BSBA,3rd Year,Bayan,"As your Auditor, I will conduct regular and independent checks on the organization's finances.",
-C009,Andrea Navarro,Public Relations Officer,BSCS,2nd Year,Lakbay,"A strong public image starts with authentic storytelling. I will manage our social media presence and build connections with other organizations.",
-C010,Bryan Ocampo,Public Relations Officer,BSIT,3rd Year,,"I will position AAA as the most visible and respected student organization in our department.",
+candidate_id,full_name,position,course,year_level,platform,photo_url,party
+C001,Ramon Aquino,President,BSIT,4th Year,"My vision is to strengthen the academic programs of our organization, build stronger industry partnerships, and ensure every member has access to quality learning opportunities.",,Lakbay
+C002,Clarissa Flores,President,BSCS,4th Year,"As your President, I will focus on innovation and inclusivity. I want to launch new tech-driven initiatives, expand our alumni network, and create mentorship programs.",,Bayan
+C003,Mark Villanueva,Vice President,BSCS,3rd Year,"I will assist the President in all organizational matters and act as a strong liaison between the officers and members.",,Lakbay
+C004,Joanna Lim,Vice President,BSIT,3rd Year,"Dedicated to serving every AAA member with integrity and passion. I will create structured feedback channels and ensure that every voice is heard.",,
+C005,Patricia Cruz,Secretary,BSBA,2nd Year,"Organized, reliable, and detail-oriented - I will keep all organizational records accurate and accessible.",,Bayan
+C006,Miguel Tan,Treasurer,BSBA,3rd Year,"Financial transparency is non-negotiable. I will maintain accurate financial records and publish regular budget reports.",,Lakbay
+C007,Sophia Ramos,Treasurer,BSIT,2nd Year,"I believe in responsible stewardship of our organization's resources. I will introduce digital financial tracking.",,
+C008,Kenneth Bautista,Auditor,BSBA,3rd Year,"As your Auditor, I will conduct regular and independent checks on the organization's finances.",,Bayan
+C009,Andrea Navarro,Public Relations Officer,BSCS,2nd Year,"A strong public image starts with authentic storytelling. I will manage our social media presence and build connections with other organizations.",,Lakbay
+C010,Bryan Ocampo,Public Relations Officer,BSIT,3rd Year,"I will position AAA as the most visible and respected student organization in our department.",,

@@ -26,7 +26,7 @@
         </div>
       </button>
       <div class="header-status" id="headerStatus"></div>
-      <a href="#" class="admin-link" onclick="goToStep('stepAdminLogin'); return false;">
+      <a href="#" class="admin-link" onclick="adminAccess(); return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Admin
       </a>
@@ -43,9 +43,9 @@
 
           <!-- Left: Text -->
           <div class="hero-text">
-            <div class="election-badge">
-              <span class="badge-dot"></span>
-              Election Now Open
+            <div class="election-badge" id="electionBadge">
+              <span class="badge-dot" id="electionBadgeDot"></span>
+              <span id="electionBadgeText">Checking status...</span>
             </div>
             <h1 class="hero-title">
               AAA Officers<br />
@@ -58,7 +58,7 @@
             <div class="election-meta">
               <div class="meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Election Period: <strong>April 29, 2026</strong></span>
+                <span>Election Period: <strong>May 6, 2026</strong></span>
               </div>
               <div class="meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -70,11 +70,11 @@
               </div>
             </div>
             <div class="hero-actions">
-              <button class="btn-primary btn-large" onclick="goToStep('stepVerify')">
+              <button class="btn-primary btn-large" id="voteNowBtn" onclick="handleVoteNow()">
                 <span>Verify &amp; Vote</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
-              <button class="btn-ghost" onclick="goToStep('stepCandidates')">View Candidates</button>
+              <button class="btn-ghost" id="viewCandidatesBtn" onclick="handleViewCandidates()">View Candidates</button>
             </div>
           </div><!-- end hero-text -->
 
@@ -281,7 +281,7 @@
             <p class="ref-hint">Take a screenshot of this for your records.</p>
           </div>
           <div class="success-summary" id="successSummary"></div>
-          <p class="success-footer">The polls close on <strong>April 29, 2026 at 11:59 PM</strong>. Results will be announced shortly after.</p>
+          <p class="success-footer">The polls close on <strong>May 6, 2026 at 11:59 PM</strong>. Results will be announced shortly after.</p>
         </div>
       </div>
     </section>
@@ -331,86 +331,270 @@
       </div>
     </section>
 
-    <!-- STEP 9: ADMIN DASHBOARD -->
+    <!-- ADMIN DASHBOARD -->
     <section id="stepAdminDashboard" class="step">
-      <div class="container">
-        <div class="step-header">
-          <div class="step-indicator">
-            <span class="si-num">07</span>
-            <span class="si-label">Admin Dashboard</span>
+
+      <!-- Admin Topbar -->
+      <div class="admin-topbar">
+        <div class="admin-topbar-brand">
+          <img src="img/AAA.png" alt="AAA" class="admin-topbar-logo" />
+          <div>
+            <span class="admin-topbar-title">Admin Dashboard</span>
+            <span class="admin-topbar-sub">AAA Election System · Association Of All Achievers</span>
           </div>
-          <button class="back-btn" style="margin-left:auto;" onclick="adminLogout()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Logout
+        </div>
+        <div class="admin-topbar-actions">
+          <button class="admin-topbar-btn" onclick="loadAdminDashboard()" id="adminRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
           </button>
         </div>
+      </div>
 
-        <!-- Election Status Control -->
-        <div class="admin-panel">
-          <div class="admin-panel-header">
-            <div>
-              <h3>Election Status</h3>
-              <p>Toggle whether voters can currently cast their votes.</p>
-            </div>
-          </div>
-          <div class="admin-status-row">
-            <div class="admin-status-indicator">
-              <span class="badge-dot" id="adminStatusDot"></span>
-              <span id="adminStatusLabel">Loading...</span>
-            </div>
-            <button class="btn-primary" id="adminToggleBtn" onclick="toggleElectionStatus()">
-              <span id="adminToggleBtnText">Loading...</span>
-              <div class="btn-spinner hidden" id="adminToggleSpinner"></div>
+      <!-- Admin Body (sidebar + content) -->
+      <div class="admin-body">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+          <nav class="admin-sidebar-nav">
+            <button class="admin-sidebar-item active" data-tab="overview" onclick="switchAdminTab('overview')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Overview</span>
+            </button>
+            <button class="admin-sidebar-item" data-tab="analytics" onclick="switchAdminTab('analytics')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>Analytics</span>
+            </button>
+            <button class="admin-sidebar-item" data-tab="candidates" onclick="switchAdminTab('candidates')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              <span>Candidates</span>
+            </button>
+            <button class="admin-sidebar-item" data-tab="voters" onclick="switchAdminTab('voters')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Voters</span>
+            </button>
+          </nav>
+          <div class="admin-sidebar-footer">
+            <button class="admin-sidebar-item admin-sidebar-item--logout" onclick="adminLogout()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Logout</span>
             </button>
           </div>
-        </div>
+        </aside>
 
-        <!-- Stats Row -->
-        <div class="admin-stats-row">
-          <div class="admin-stat-card">
-            <p class="admin-stat-num" id="statTotal">—</p>
-            <p class="admin-stat-label">Total Registered</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-num admin-stat-voted" id="statVoted">—</p>
-            <p class="admin-stat-label">Voted</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-num admin-stat-notvoted" id="statNotVoted">—</p>
-            <p class="admin-stat-label">Not Yet Voted</p>
-          </div>
-        </div>
+        <!-- Main Content -->
+        <div class="admin-content">
 
-        <!-- Voters Table -->
-        <div class="admin-panel">
-          <div class="admin-panel-header">
-            <div>
-              <h3>Registered Voters</h3>
+        <!-- TAB: OVERVIEW -->
+        <div class="admin-tab-panel" id="adminTab-overview">
+
+          <!-- Election Status Control -->
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Election Status</h3>
+                <p>Toggle whether voters can currently cast their votes.</p>
+              </div>
             </div>
-            <input type="text" class="admin-search" id="voterSearch"
-                   placeholder="Search by name, ID, or email..."
-                   oninput="filterVotersTable()" />
+            <div class="admin-status-row">
+              <div class="admin-status-indicator">
+                <span class="badge-dot" id="adminStatusDot"></span>
+                <span id="adminStatusLabel">Loading...</span>
+              </div>
+              <button class="btn-primary" id="adminToggleBtn" onclick="toggleElectionStatus()">
+                <span id="adminToggleBtnText">Loading...</span>
+                <div class="btn-spinner hidden" id="adminToggleSpinner"></div>
+              </button>
+            </div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table" id="votersTable">
-              <thead>
-                <tr>
-                  <th>Student ID</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
-                  <th>Course</th>
-                  <th>Year</th>
-                  <th>Voted?</th>
-                </tr>
-              </thead>
-              <tbody id="votersTableBody">
-                <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">Loading...</td></tr>
-              </tbody>
-            </table>
+
+          <!-- Candidates Visibility Control -->
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Candidates Page</h3>
+                <p>Control whether the public can browse candidates before voting.</p>
+              </div>
+            </div>
+            <div class="admin-status-row">
+              <div class="admin-status-indicator">
+                <span class="badge-dot" id="adminCandidatesDot"></span>
+                <span id="adminCandidatesLabel">Loading...</span>
+              </div>
+              <button class="btn-primary" id="adminCandidatesBtn" onclick="toggleCandidatesVisibility()">
+                <span id="adminCandidatesBtnText">Loading...</span>
+                <div class="btn-spinner hidden" id="adminCandidatesSpinner"></div>
+              </button>
+            </div>
           </div>
+
+          <!-- Stats Row -->
+          <div class="admin-stats-row">
+            <div class="admin-stat-card">
+              <p class="admin-stat-num" id="statTotal">—</p>
+              <p class="admin-stat-label">Total Voters</p>
+            </div>
+            <div class="admin-stat-card">
+              <p class="admin-stat-num admin-stat-voted" id="statVoted">—</p>
+              <p class="admin-stat-label">Voted</p>
+            </div>
+            <div class="admin-stat-card">
+              <p class="admin-stat-num admin-stat-notvoted" id="statNotVoted">—</p>
+              <p class="admin-stat-label">Not Yet Voted</p>
+            </div>
+          </div>
+
         </div>
 
-      </div>
+        <!-- TAB: ANALYTICS -->
+        <div class="admin-tab-panel hidden" id="adminTab-analytics">
+
+          <div class="admin-panel" id="voteAnalyticsPanel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Vote Analytics</h3>
+                <p>Live breakdown of votes per candidate and overall voter turnout.</p>
+              </div>
+            </div>
+            <div id="voteAnalyticsContent">
+              <p style="color:var(--text-muted);padding:8px 0;">Loading analytics...</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TAB: CANDIDATES -->
+        <div class="admin-tab-panel hidden" id="adminTab-candidates">
+
+          <!-- Candidate List -->
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Current Candidates</h3>
+                <p>All candidates currently in the election.</p>
+              </div>
+            </div>
+            <div id="candidatesListContent">
+              <p style="color:var(--text-muted);padding:8px 0;">Loading candidates...</p>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Add Candidate</h3>
+                <p>Add a new candidate to the election. They will appear on the ballot immediately.</p>
+              </div>
+              <button class="admin-topbar-btn" onclick="toggleAddCandidateForm()" id="addCandidateToggleBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Candidate
+              </button>
+            </div>
+
+            <div id="addCandidateForm" class="admin-candidate-form hidden">
+              <div class="admin-form-grid">
+                <div class="form-group">
+                  <label for="candFullName">Full Name <span class="req">*</span></label>
+                  <input type="text" id="candFullName" placeholder="e.g. Maria Santos" />
+                  <span class="field-error" id="candFullNameError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="candPosition">Position <span class="req">*</span></label>
+                  <input type="text" id="candPosition" placeholder="e.g. President" list="positionSuggestions" />
+                  <datalist id="positionSuggestions"></datalist>
+                  <span class="field-error" id="candPositionError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="candCourse">Course <span class="req">*</span></label>
+                  <input type="text" id="candCourse" placeholder="e.g. BSIT" />
+                  <span class="field-error" id="candCourseError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="candYearLevel">Year Level <span class="req">*</span></label>
+                  <input type="text" id="candYearLevel" placeholder="e.g. 3rd Year" list="yearSuggestions" />
+                  <datalist id="yearSuggestions">
+                    <option value="1st Year"/>
+                    <option value="2nd Year"/>
+                    <option value="3rd Year"/>
+                    <option value="4th Year"/>
+                  </datalist>
+                  <span class="field-error" id="candYearLevelError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="candParty">Party / Slate <span class="admin-optional">(optional)</span></label>
+                  <input type="text" id="candParty" placeholder="e.g. Lakbay" />
+                </div>
+                <div class="form-group">
+                  <label for="candPhotoUrl">Photo URL <span class="admin-optional">(optional)</span></label>
+                  <input type="url" id="candPhotoUrl" placeholder="https://drive.google.com/uc?export=view&id=..." />
+                </div>
+                <div class="form-group admin-form-full">
+                  <label for="candPlatform">Platform <span class="req">*</span></label>
+                  <textarea id="candPlatform" rows="4" placeholder="Describe the candidate's platform and goals..."></textarea>
+                  <span class="field-error" id="candPlatformError"></span>
+                </div>
+              </div>
+              <div class="admin-form-message hidden" id="addCandidateMessage"></div>
+              <div class="admin-form-actions">
+                <button class="btn-ghost" onclick="toggleAddCandidateForm()">Cancel</button>
+                <button class="btn-primary" id="addCandidateBtn" onclick="submitAddCandidate()">
+                  <span id="addCandidateBtnText">Add Candidate</span>
+                  <div class="btn-spinner hidden" id="addCandidateSpinner"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TAB: VOTERS -->
+        <div class="admin-tab-panel hidden" id="adminTab-voters">
+
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Official Voter Masterlist</h3>
+              </div>
+              <input type="text" class="admin-search" id="voterSearch"
+                     placeholder="Search by name, ID, or email..."
+                     oninput="filterVotersTable()" />
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table" id="votersTable">
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Year</th>
+                    <th>Voted?</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="votersTableBody">
+                  <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:28px;">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Registered Voters</h3>
+                <p>Students who have self-registered via the registration page.</p>
+              </div>
+            </div>
+            <div id="registeredVotersContent">
+              <p style="color:var(--text-muted);padding:8px 0;">Loading...</p>
+            </div>
+          </div>
+
+        </div>
+
+        </div><!-- /.admin-content -->
+      </div><!-- /.admin-body -->
     </section>
 
   </main>
@@ -435,7 +619,7 @@
         <p class="footer-heading">Quick Links</p>
         <ul class="footer-links">
           <li><a href="#" onclick="goToStep('stepLanding'); return false;">Home</a></li>
-          <li><a href="#" onclick="goToStep('stepCandidates'); return false;">View Candidates</a></li>
+          <li><a href="#" id="footerCandidatesLink" onclick="handleViewCandidates(); return false;">View Candidates</a></li>
           <li><a href="#" onclick="goToStep('stepVerify'); return false;">Vote Now</a></li>
           <li><a href="register.html">Register to Vote</a></li>
         </ul>
@@ -448,7 +632,7 @@
           <li><a href="#" onclick="openGuidelinesModal(); return false;">Read Election Rules</a></li>
           <li><span class="footer-text footer-icon-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            April 29, 2026
+            May 6, 2026
           </span></li>
           <li><span class="footer-text footer-icon-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -499,9 +683,33 @@
           <li>Once submitted, votes are <strong>final and cannot be changed</strong>.</li>
           <li>Campaigning, vote-buying, and any form of electoral fraud are strictly prohibited.</li>
           <li>All personal data collected is used solely for voter verification and will not be shared with third parties.</li>
-          <li>Results will be announced by the Election Committee after the polls close on <strong>April 29, 2026 at 11:59 PM</strong>.</li>
+          <li>Results will be announced by the Election Committee after the polls close on <strong>May 6, 2026 at 11:59 PM</strong>.</li>
           <li>Any disputes or concerns must be raised with the Election Committee within 24 hours after the polls close.</li>
         </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELECTION CLOSED MODAL -->
+  <div class="modal-overlay" id="electionClosedOverlay" onclick="closeElectionClosedModal()">
+    <div class="modal-card" onclick="event.stopPropagation()" style="max-width:440px; text-align:center;">
+      <button class="modal-close" onclick="closeElectionClosedModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="padding: 44px 32px 36px;">
+        <div class="closed-modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--text-primary); margin-bottom:10px;">Voting is Not Open Yet</h2>
+        <p style="font-size:14px; color:var(--text-secondary); line-height:1.7;">
+          The election period has not started or has already ended.<br/>
+          Please check back during the official voting period.
+        </p>
+        <div style="margin-top:28px; padding:16px 20px; background:var(--bg); border-radius:var(--radius); box-shadow:var(--neu-inset); font-size:13px; color:var(--text-muted);">
+          <strong style="color:var(--text-primary);">Election Period</strong><br/>
+          May 6, 2026 · 8:00 AM – 11:59 PM
+        </div>
+        <button class="btn-ghost" style="margin-top:24px; width:100%;" onclick="closeElectionClosedModal()">Got it</button>
       </div>
     </div>
   </div>
@@ -513,6 +721,45 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN ACTION MODAL -->
+  <div class="modal-overlay" id="adminActionOverlay" onclick="closeAdminActionModal(false)">
+    <div class="modal-card admin-action-modal" id="adminActionModal" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="adminActionTitle">
+      <button class="modal-close" id="adminActionCloseBtn" onclick="closeAdminActionModal(false)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="admin-action-modal__body">
+        <div class="admin-action-modal__topline">
+          <span class="admin-action-modal__eyebrow" id="adminActionEyebrow">Admin Action</span>
+          <span class="admin-action-modal__tone" id="adminActionTonePill">Review</span>
+        </div>
+        <div class="admin-action-modal__hero">
+          <div class="admin-action-modal__icon" id="adminActionIcon" aria-hidden="true"></div>
+          <div>
+            <h2 class="admin-action-modal__title" id="adminActionTitle">Confirm action</h2>
+            <p class="admin-action-modal__message" id="adminActionMessage">Choose how you want to continue.</p>
+          </div>
+        </div>
+        <div class="admin-action-modal__state" id="adminActionState">
+          <div class="admin-action-modal__state-card">
+            <span class="admin-action-modal__state-label">Current</span>
+            <strong class="admin-action-modal__state-value" id="adminActionCurrentValue">Closed</strong>
+          </div>
+          <div class="admin-action-modal__state-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="admin-action-modal__state-card admin-action-modal__state-card--next">
+            <span class="admin-action-modal__state-label">Next</span>
+            <strong class="admin-action-modal__state-value" id="adminActionNextValue">Open</strong>
+          </div>
+        </div>
+        <div class="admin-action-modal__actions">
+          <button class="btn-ghost" type="button" id="adminActionCancelBtn" onclick="closeAdminActionModal(false)">Cancel</button>
+          <button class="btn-primary" type="button" id="adminActionConfirmBtn" onclick="closeAdminActionModal(true)">Confirm</button>
+        </div>
+      </div>
     </div>
   </div>
 

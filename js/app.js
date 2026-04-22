@@ -9,6 +9,8 @@ const STATE = {
   positions: [],
   votes: {},        // { position: candidate_id }
   isVerified: false,
+  electionActive: null,
+  candidatesVisible: null,
   currentStep: 'stepLanding',
   previousStep: null,
 };
@@ -477,11 +479,15 @@ function submitSampleVote() {
 }
 
 async function submitToSheets() {
-  const votesEncoded = encodeURIComponent(JSON.stringify(STATE.votes));
-  const timestamp = encodeURIComponent(new Date().toISOString());
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=submitVote&student_id=${encodeURIComponent(STATE.currentVoter.student_id)}&votes=${votesEncoded}&timestamp=${timestamp}`;
-
-  const response = await fetch(url);
+  const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'submitVote',
+      student_id: STATE.currentVoter.student_id,
+      votes: STATE.votes,
+      timestamp: new Date().toISOString(),
+    }),
+  });
   if (!response.ok) throw new Error('Network error');
   return await response.json();
 }
@@ -578,9 +584,88 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
 
+// ===== ELECTION STATUS =====
+async function loadElectionStatus() {
+  try {
+    let active, candidatesVisible;
+    if (CONFIG.USE_SAMPLE_DATA) {
+      active = SAMPLE_DATA.election_active;
+      candidatesVisible = SAMPLE_DATA.candidates_visible;
+    } else {
+      const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getElectionStatus`);
+      const data = await res.json();
+      active = data.success ? data.election_active : false;
+      candidatesVisible = data.success ? data.candidates_visible : true;
+    }
+    STATE.electionActive = active;
+    STATE.candidatesVisible = candidatesVisible;
+  } catch (e) {
+    STATE.electionActive = false;
+    STATE.candidatesVisible = true;
+  }
+  updateVotingUI();
+}
+
+function updateVotingUI() {
+  const active    = STATE.electionActive;
+  const canView   = STATE.candidatesVisible;
+
+  const badge          = document.getElementById('electionBadge');
+  const badgeDot       = document.getElementById('electionBadgeDot');
+  const badgeText      = document.getElementById('electionBadgeText');
+  const voteBtn        = document.getElementById('voteNowBtn');
+  const viewCandBtn    = document.getElementById('viewCandidatesBtn');
+  const footerCandLink = document.getElementById('footerCandidatesLink');
+
+  // Election open/closed
+  if (active !== null) {
+    if (active) {
+      if (badge)     badge.classList.remove('election-badge--closed');
+      if (badgeDot)  { badgeDot.style.background = ''; badgeDot.style.boxShadow = ''; badgeDot.style.animation = ''; }
+      if (badgeText) badgeText.textContent = 'Election Now Open';
+      if (voteBtn)   { voteBtn.classList.remove('btn-primary--disabled'); voteBtn.title = ''; }
+    } else {
+      if (badge)     badge.classList.add('election-badge--closed');
+      if (badgeDot)  { badgeDot.style.background = 'var(--danger)'; badgeDot.style.boxShadow = '0 0 0 3px var(--danger-glow)'; badgeDot.style.animation = 'none'; }
+      if (badgeText) badgeText.textContent = 'Voting Closed';
+      if (voteBtn)   { voteBtn.classList.add('btn-primary--disabled'); voteBtn.title = 'Voting is currently closed'; }
+    }
+  }
+
+  // Candidates visible/hidden
+  if (canView !== null) {
+    const hidden = !canView;
+    if (viewCandBtn)    { viewCandBtn.style.display = hidden ? 'none' : ''; }
+    if (footerCandLink) { footerCandLink.style.display = hidden ? 'none' : ''; }
+  }
+}
+
+function handleVoteNow() {
+  if (STATE.electionActive === false) {
+    openElectionClosedModal();
+  } else {
+    goToStep('stepVerify');
+  }
+}
+
+function handleViewCandidates() {
+  if (STATE.candidatesVisible === false) return;
+  goToStep('stepCandidates');
+}
+
+function openElectionClosedModal() {
+  document.getElementById('electionClosedOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeElectionClosedModal() {
+  document.getElementById('electionClosedOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-  loadCandidates(); // preload in background
+  loadCandidates();    // preload in background
+  loadElectionStatus(); // check if voting is open
 });
 
 // ===== BACK TO TOP =====

@@ -45,7 +45,7 @@
           <!-- Left info panel -->
           <div class="verify-info">
             <h2 class="section-title">Register to Vote</h2>
-            <p class="section-desc">Fill in your details to join the voter masterlist. Once registered, you will be eligible to vote on election day.</p>
+            <p class="section-desc">Fill in your details to register for the election system. Your information will be recorded in the registration log and added to the official voter masterlist.</p>
             <div class="info-rules">
               <div class="rule-item">
                 <div class="rule-icon">
@@ -63,13 +63,13 @@
                 <div class="rule-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M20 12c0 4.418-3.582 8-8 8S4 16.418 4 12 7.582 4 12 4s8 3.582 8 8z"/></svg>
                 </div>
-                <p>Registration is open at any time before the election</p>
+                <p>Once registered, you can verify and vote when the election is open</p>
               </div>
               <div class="rule-item">
                 <div class="rule-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
-                <p>Election day: <strong>April 29, 2026</strong></p>
+                <p>Election day: <strong>May 6, 2026</strong></p>
               </div>
             </div>
           </div>
@@ -93,21 +93,12 @@
             </div>
 
             <div class="form-group">
-              <label for="regLastName">Last Name</label>
+              <label for="regFullName">Full Name</label>
               <div class="input-wrapper">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <input type="text" id="regLastName" placeholder="Dela Cruz" autocomplete="off" />
+                <input type="text" id="regFullName" placeholder="Juan Dela Cruz" autocomplete="off" />
               </div>
-              <span class="field-error" id="regLastNameError"></span>
-            </div>
-
-            <div class="form-group">
-              <label for="regFirstName">First Name</label>
-              <div class="input-wrapper">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <input type="text" id="regFirstName" placeholder="Juan" autocomplete="off" />
-              </div>
-              <span class="field-error" id="regFirstNameError"></span>
+              <span class="field-error" id="regFullNameError"></span>
             </div>
 
             <div class="form-group">
@@ -213,27 +204,38 @@
       el.style.display = 'block';
     }
 
+    function explainRegistrationApiMessage(message) {
+      if (message === 'Unknown action.') {
+        return 'This Apps Script deployment is outdated. Re-deploy the latest Code.gs and update APPS_SCRIPT_URL if the web app URL changed.';
+      }
+      if (message && message.includes('SPREADSHEET_ID is not defined')) {
+        return 'The Apps Script deployment has no spreadsheet ID configured. Set SPREADSHEET_ID in Code.gs, then deploy a new web app version.';
+      }
+      if (message && message.includes('Set SPREADSHEET_ID in Code.gs')) {
+        return 'The Apps Script deployment has no spreadsheet ID configured. Set SPREADSHEET_ID in Code.gs, then deploy a new web app version.';
+      }
+      return message;
+    }
+
     function submitRegistration() {
       clearErrors();
 
       const studentId = document.getElementById('regStudentId').value.trim();
-      const lastName  = document.getElementById('regLastName').value.trim();
-      const firstName = document.getElementById('regFirstName').value.trim();
+      const fullName  = document.getElementById('regFullName').value.trim();
       const email     = document.getElementById('regEmail').value.trim().toLowerCase();
       const course    = document.getElementById('regCourse').value.trim();
       const yearLevel = document.getElementById('regYearLevel').value.trim();
 
       let hasError = false;
       if (!studentId)  { showFieldError('regStudentIdError', 'Student ID is required.');  hasError = true; }
-      if (!lastName)   { showFieldError('regLastNameError',  'Last name is required.');   hasError = true; }
-      if (!firstName)  { showFieldError('regFirstNameError', 'First name is required.');  hasError = true; }
+      if (!fullName)   { showFieldError('regFullNameError', 'Full name is required.'); hasError = true; }
       if (!email) {
         showFieldError('regEmailError', 'Email is required.'); hasError = true;
       } else if (!email.endsWith(ALLOWED_EMAIL_DOMAIN)) {
         showFieldError('regEmailError', `Email must end with ${ALLOWED_EMAIL_DOMAIN}`); hasError = true;
       }
-      if (!course)    { showFieldError('regCourseError',    'Course is required.');      hasError = true; }
-      if (!yearLevel) { showFieldError('regYearLevelError', 'Year level is required.');  hasError = true; }
+      if (!course)    { showFieldError('regCourseError', 'Course is required.'); hasError = true; }
+      if (!yearLevel) { showFieldError('regYearLevelError', 'Year level is required.'); hasError = true; }
       if (hasError) return;
 
       setLoading(true);
@@ -241,8 +243,7 @@
 
       const url = `${CONFIG.APPS_SCRIPT_URL}?action=registerVoter` +
         `&student_id=${encodeURIComponent(studentId)}` +
-        `&last_name=${encodeURIComponent(lastName)}` +
-        `&first_name=${encodeURIComponent(firstName)}` +
+        `&full_name=${encodeURIComponent(fullName)}` +
         `&email=${encodeURIComponent(email)}` +
         `&course=${encodeURIComponent(course)}` +
         `&year_level=${encodeURIComponent(yearLevel)}`;
@@ -252,10 +253,10 @@
         .then(result => {
           if (result.success) {
             showFormMessage('regMessage', result.message, 'success');
-            ['regStudentId','regLastName','regFirstName','regEmail','regCourse','regYearLevel']
+            ['regStudentId','regFullName','regEmail','regCourse','regYearLevel']
               .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
           } else {
-            showFormMessage('regMessage', result.message, 'error');
+            showFormMessage('regMessage', explainRegistrationApiMessage(result.message), 'error');
           }
         })
         .catch(() => showFormMessage('regMessage', 'Connection error. Please try again.', 'error'))

@@ -1,6 +1,6 @@
-student_id,full_name,school_email,course,year_level,eligible,has_voted,voted_at
-2021-00101,Maria Santos,m.santos@sjp2cd.edu.ph,BSIT,4th Year,TRUE,FALSE,
-2022-00202,Juan dela Cruz,j.delacruz@sjp2cd.edu.ph,BSCS,3rd Year,TRUE,FALSE,
-2023-00303,Ana Reyes,a.reyes@sjp2cd.edu.ph,BSBA,2nd Year,TRUE,FALSE,
-2020-00404,Carlo Mendoza,c.mendoza@sjp2cd.edu.ph,BSED,4th Year,TRUE,TRUE,2026-04-20T09:15:00.000Z
-2021-00505,Liza Garcia,l.garcia@sjp2cd.edu.ph,BSIT,3rd Year,TRUE,FALSE,
+student_id,full_name,school_email,course,year_level,scholarship_type,eligible,has_voted,voted_at
+2021-00101,Maria Santos,m.santos@sjp2cd.edu.ph,BSIT,4th Year,ACADEMIC SCHOLAR,TRUE,FALSE,
+2022-00202,Juan dela Cruz,j.delacruz@sjp2cd.edu.ph,BSCS,3rd Year,,TRUE,FALSE,
+2023-00303,Ana Reyes,a.reyes@sjp2cd.edu.ph,BSBA,2nd Year,,TRUE,FALSE,
+2020-00404,Carlo Mendoza,c.mendoza@sjp2cd.edu.ph,BSED,4th Year,,TRUE,TRUE,2026-04-20T09:15:00.000Z
+2021-00505,Liza Garcia,l.garcia@sjp2cd.edu.ph,BSIT,3rd Year,WORKING SCHOLAR,TRUE,FALSE,

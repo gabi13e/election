@@ -1,146 +1,141 @@
-# AAA Election System — Setup Guide
+# AAA Election System Setup Guide
 
 ## Project Structure
-```
+```text
 aaa-election/
-├── index.html          # Main HTML file (all pages)
-├── css/
-│   └── style.css       # All styles
-├── js/
-│   ├── config.js       # 🔧 Configuration (edit this!)
-│   ├── data.js         # Sample data for testing
-│   └── app.js          # Main application logic
-├── Code.gs             # Google Apps Script backend
-└── README.md           # This file
+|-- index.html
+|-- register.html
+|-- css/
+|   `-- style.css
+|-- js/
+|   |-- config.js
+|   |-- data.js
+|   |-- app.js
+|   `-- admin.js
+|-- Code.gs
+`-- sample-sheet/
 ```
 
----
+## Phase 1: Test Locally
 
-## PHASE 1 — Testing Locally (No Google Sheets)
+1. Open `index.html` in a browser.
+2. In `js/config.js`, set `USE_SAMPLE_DATA: true`.
+3. Use the sample voters in `js/data.js` to verify the flow.
 
-1. Open `index.html` in any browser.
-2. In `js/config.js`, make sure `USE_SAMPLE_DATA: true` (it already is).
-3. Use these test credentials to verify:
+## Phase 2: Connect Google Sheets
 
-| Student ID   | School Email                     | Status        |
-|-------------|----------------------------------|---------------|
-| 2021-00101  | m.santos@sjp2cd.edu.ph           | ✅ Can vote   |
-| 2022-00202  | j.delacruz@sjp2cd.edu.ph         | ✅ Can vote   |
-| 2023-00303  | a.reyes@sjp2cd.edu.ph            | ✅ Can vote   |
-| 2020-00404  | c.mendoza@sjp2cd.edu.ph          | ❌ Already voted |
+### Step 1: Create the workbook
 
----
+Create these tabs in Google Sheets:
 
-## PHASE 2 — Connect Google Sheets
+**Sheet 1: `Registered Voters`**
 
-### Step 1: Create the Google Sheet
+| student_id | full_name | school_email | course | year_level |
+|---|---|---|---|---|
+| 2021-00101 | Maria Santos | m.santos@sjp2cd.edu.ph | BSIT | 4th Year |
+| 2022-00202 | Juan dela Cruz | j.delacruz@sjp2cd.edu.ph | BSCS | 3rd Year |
 
-1. Go to [sheets.google.com](https://sheets.google.com) and create a new spreadsheet.
-2. Rename it: **AAA Election 2025**
-3. Create 3 sheets (tabs) with these exact names:
+Use this tab for registration submissions. Successful registrations are also mirrored into the `Voters` tab so the registrant can verify and vote.
 
-**Sheet 1: `Voters`**
-| student_id | full_name | school_email | course | year_level | eligible | has_voted | voted_at |
+**Sheet 2: `Voters`**
+
+| student_id | full_name | school_email | course | year_level | scholarship_type | eligible | has_voted | voted_at |
+|---|---|---|---|---|---|---|---|---|
+| 2021-00101 | Maria Santos | m.santos@sjp2cd.edu.ph | BSIT | 4th Year | ACADEMIC SCHOLAR | TRUE | FALSE | |
+| 2022-00202 | Juan dela Cruz | j.delacruz@sjp2cd.edu.ph | BSCS | 3rd Year | | TRUE | FALSE | |
+
+This is the authoritative voter masterlist used for verification and vote locking.
+
+**Sheet 3: `Candidates`**
+
+| candidate_id | full_name | position | course | year_level | platform | photo_url | party |
 |---|---|---|---|---|---|---|---|
-| 2021-00101 | Maria Santos | m.santos@sjp2cd.edu.ph | BSIT | 4th Year | TRUE | FALSE | |
-| 2022-00202 | Juan dela Cruz | j.delacruz@sjp2cd.edu.ph | BSCS | 3rd Year | TRUE | FALSE | |
-*(add all your voters here)*
+| C001 | Ramon Aquino | President | BSIT | 4th Year | Platform text here | https://... | Lakbay Party List |
 
-**Sheet 2: `Candidates`**
-| candidate_id | full_name | position | course | year_level | platform | photo_url |
-|---|---|---|---|---|---|---|
-| C001 | Ramon Aquino | President | BSIT | 4th Year | Platform text here | https://... or leave blank |
-*(add all your candidates here)*
+The column order above matches the current spreadsheet format. The backend reads candidates by header name, so extra columns are safe as long as the required headers stay the same.
 
-**Sheet 3: `Votes`**
+**Sheet 4: `Votes`**
+
 | vote_id | student_id | position | candidate_id | timestamp | reference_number |
 |---|---|---|---|---|---|
-*(leave empty — the system fills this)*
 
-### Step 2: Set Up Google Apps Script
+Leave this tab empty except for the header row. The system appends one row per selected position.
 
-1. In your Google Sheet, click **Extensions → Apps Script**
-2. Delete all default code in `Code.gs`
-3. Paste the entire contents of `Code.gs` from this project
-4. Replace `YOUR_SPREADSHEET_ID_HERE` with your Sheet's ID
-   - Your Sheet URL: `https://docs.google.com/spreadsheets/d/`**`THIS_IS_YOUR_ID`**`/edit`
-5. Click **Save** (💾)
+**Sheet 5: `Settings`**
 
-### Step 3: Deploy as Web App
+| key | value |
+|---|---|
+| election_active | TRUE |
 
-1. Click **Deploy → New deployment**
-2. Click the gear icon next to "Select type" → choose **Web app**
-3. Set:
-   - **Description**: AAA Election API
-   - **Execute as**: Me (your email)
-   - **Who has access**: Anyone *(important — allows the website to connect)*
-4. Click **Deploy**
-5. Click **Authorize access** and grant permissions
-6. Copy the **Web app URL** (ends in `/exec`)
+This tab is optional. If present, it stores election settings such as `election_active`.
 
-### Step 4: Update config.js
+### Step 2: Set up Apps Script
 
-Open `js/config.js` and update:
-```javascript
-APPS_SCRIPT_URL: "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
-USE_SAMPLE_DATA: false,  // ← Change this to false
+1. Open the Google Sheet.
+2. Go to `Extensions -> Apps Script`.
+3. Replace the default script with the contents of `Code.gs`.
+4. Replace `YOUR_SPREADSHEET_ID_HERE` in `Code.gs` with your spreadsheet ID.
+5. In `Project Settings -> Script properties`, add:
+   - `ADMIN_USERNAME`
+   - `AUTH_SECRET`
+   - either `ADMIN_PASSWORD_HASH` or `ADMIN_PASSWORD`
+6. Save the project.
+
+### Step 3: Deploy as a web app
+
+1. Click `Deploy -> New deployment`.
+2. Choose `Web app`.
+3. Set `Execute as` to your account.
+4. Set access to `Anyone`.
+5. Deploy and copy the `/exec` URL.
+
+### Step 4: Update `js/config.js`
+
+```js
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
+  USE_SAMPLE_DATA: false,
+};
 ```
 
----
+## Notes
 
-## PHASE 3 — Deploy the Website
-
-### Option A: GitHub Pages (Free, Recommended)
-1. Create a new GitHub repository (public)
-2. Upload all files in `aaa-election/` to the repo
-3. Go to **Settings → Pages → Branch: main → Save**
-4. Your site will be live at: `https://yourusername.github.io/aaa-election`
-
-### Option B: Netlify (Free, Drag & Drop)
-1. Go to [netlify.com](https://netlify.com) and sign up
-2. Drag your `aaa-election/` folder to the dashboard
-3. Done — you'll get a live URL instantly
-
-### Option C: Any web host
-Just upload all files in `aaa-election/` to your hosting provider's public folder (e.g., `public_html`).
-
----
-
-## Adding Candidate Photos
-
-In the `Candidates` sheet, add image URLs in the `photo_url` column.
-Options:
-- **Google Drive**: Upload image → right-click → Get link → change `...sharing` to `...uc?export=view&id=FILE_ID`
-- **Imgur**: Upload image → copy direct link (ends in `.jpg` or `.png`)
-- Leave blank for auto-generated initials placeholder
-
----
-
-## Security Notes
-
-- The system validates Student ID + email match from the masterlist
-- `eligible = TRUE` must be set per voter (prevents ineligible access)
-- `has_voted` is checked both client-side and server-side
-- `LockService` prevents double-vote race conditions on the server
-- Email domain is restricted to `@sjp2cd.edu.ph` (both client and server validate)
-
----
-
-## Customization
-
-| What to change | Where |
-|---|---|
-| Election title, dates | `index.html` (hero section) + `js/config.js` |
-| Email domain | `js/config.js` → `ALLOWED_EMAIL_DOMAIN` |
-| Colors | `css/style.css` → `:root` CSS variables |
-| Organization name | `index.html` header + footer |
-
----
+- `eligible` must be `TRUE` in the `Voters` tab before a user can vote.
+- `has_voted` and `voted_at` are updated automatically after a successful submission.
+- `submitVote` uses `POST`; redeploy Apps Script after updating `Code.gs`.
+- Admin login uses `POST` and signed expiring tokens.
+- Do not store admin credentials in the spreadsheet.
+- Candidate `photo_url` can be blank. The UI will render initials automatically.
+- The frontend restricts emails to `@sjp2cd.edu.ph`.
 
 ## Troubleshooting
 
-**"No matching record found"**: Check that the voter row has `eligible = TRUE` and the student_id/email match exactly (no extra spaces).
+**No matching record found**
 
-**CORS error when connecting to Apps Script**: Make sure the deployment is set to "Anyone can access" (not "Anyone with Google account").
+Check the `Voters` tab and confirm:
+- `student_id` matches exactly
+- `school_email` matches exactly
+- `eligible` is `TRUE`
+- `has_voted` is still `FALSE`
 
-**Votes not saving**: Re-deploy the Apps Script after any code changes (Deploy → Manage deployments → Edit → Deploy new version).
+**Registration works but the voter still cannot log in**
+
+Check that the registration row was added to `Voters` as well as `Registered Voters`, and confirm `eligible` is `TRUE`.
+
+**Votes are not saving**
+
+Redeploy the Apps Script web app after changing `Code.gs`, and confirm `js/config.js` points to the current deployment URL.
+
+**Admin login says security is not configured**
+
+Add these Apps Script Script Properties:
+- `ADMIN_USERNAME`
+- `AUTH_SECRET`
+- `ADMIN_PASSWORD_HASH` or `ADMIN_PASSWORD`
+
+If you want to store a hash instead of a plain password:
+1. Set `AUTH_SECRET` first in Script Properties.
+2. In Apps Script, edit `logAdminPasswordHashForSetup()` in `Code.gs` and replace the placeholder password.
+3. Run `logAdminPasswordHashForSetup()`.
+4. Copy the logged value into Script Properties as `ADMIN_PASSWORD_HASH`.
+5. Remove any `ADMIN_PASSWORD` property if you created one earlier.
