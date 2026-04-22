@@ -11,6 +11,7 @@ const STATE = {
   isVerified: false,
   electionActive: null,
   candidatesVisible: null,
+  registrationOpen: null,
   currentStep: 'stepLanding',
   previousStep: null,
 };
@@ -587,21 +588,29 @@ document.addEventListener('keydown', (e) => {
 // ===== ELECTION STATUS =====
 async function loadElectionStatus() {
   try {
-    let active, candidatesVisible;
+    let active, candidatesVisible, registrationOpen;
     if (CONFIG.USE_SAMPLE_DATA) {
       active = SAMPLE_DATA.election_active;
       candidatesVisible = SAMPLE_DATA.candidates_visible;
+      registrationOpen = Object.prototype.hasOwnProperty.call(SAMPLE_DATA, 'registration_open')
+        ? SAMPLE_DATA.registration_open
+        : true;
     } else {
       const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getElectionStatus`);
       const data = await res.json();
       active = data.success ? data.election_active : false;
       candidatesVisible = data.success ? data.candidates_visible : true;
+      registrationOpen = data.success && Object.prototype.hasOwnProperty.call(data, 'registration_open')
+        ? data.registration_open
+        : true;
     }
     STATE.electionActive = active;
     STATE.candidatesVisible = candidatesVisible;
+    STATE.registrationOpen = registrationOpen;
   } catch (e) {
     STATE.electionActive = false;
     STATE.candidatesVisible = true;
+    STATE.registrationOpen = true;
   }
   updateVotingUI();
 }
@@ -615,7 +624,10 @@ function updateVotingUI() {
   const badgeText      = document.getElementById('electionBadgeText');
   const voteBtn        = document.getElementById('voteNowBtn');
   const viewCandBtn    = document.getElementById('viewCandidatesBtn');
+  const registerBtn    = document.getElementById('registerNowBtn');
   const footerCandLink = document.getElementById('footerCandidatesLink');
+  const footerRegisterLink = document.getElementById('footerRegisterLink');
+  const registrationOpen = STATE.registrationOpen;
 
   // Election open/closed
   if (active !== null) {
@@ -638,6 +650,19 @@ function updateVotingUI() {
     if (viewCandBtn)    { viewCandBtn.style.display = hidden ? 'none' : ''; }
     if (footerCandLink) { footerCandLink.style.display = hidden ? 'none' : ''; }
   }
+
+  if (registrationOpen !== null) {
+    const closed = !registrationOpen;
+    if (registerBtn) {
+      registerBtn.style.display = closed ? 'none' : '';
+      registerBtn.disabled = false;
+      registerBtn.classList.remove('btn-primary--disabled');
+      registerBtn.title = '';
+    }
+    if (footerRegisterLink) {
+      footerRegisterLink.style.display = closed ? 'none' : '';
+    }
+  }
 }
 
 function handleVoteNow() {
@@ -651,6 +676,11 @@ function handleVoteNow() {
 function handleViewCandidates() {
   if (STATE.candidatesVisible === false) return;
   goToStep('stepCandidates');
+}
+
+function handleRegisterNow() {
+  if (STATE.registrationOpen === false) return;
+  window.location.href = 'register.html';
 }
 
 function openElectionClosedModal() {

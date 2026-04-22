@@ -30,6 +30,7 @@ const SHEETS = {
 
 const ADMIN_AUTH = {
   DEFAULT_ELECTION_ACTIVE: false,
+  DEFAULT_REGISTRATION_OPEN: true,
   TOKEN_TTL_MS: 8 * 60 * 60 * 1000,
 };
 
@@ -232,6 +233,7 @@ function doGet(e) {
         success: true,
         election_active: isTruthyValue(getSetting("election_active", ADMIN_AUTH.DEFAULT_ELECTION_ACTIVE)),
         candidates_visible: isTruthyValue(getSetting("candidates_visible", true)),
+        registration_open: isTruthyValue(getSetting("registration_open", ADMIN_AUTH.DEFAULT_REGISTRATION_OPEN)),
       };
     } else if (action === "getCandidates") {
       result = getCandidates();
@@ -271,6 +273,8 @@ function doPost(e) {
       result = setElectionStatus(payload.token, payload.active);
     } else if (payload.action === "setCandidatesVisibility") {
       result = setCandidatesVisibility(payload.token, payload.visible);
+    } else if (payload.action === "setRegistrationStatus") {
+      result = setRegistrationStatus(payload.token, payload.open);
     } else if (payload.action === "addCandidate") {
       result = addCandidate(payload.token, payload.candidate);
     } else if (payload.action === "getVoteResults") {
@@ -295,6 +299,10 @@ function doPost(e) {
 function registerVoter(studentId, fullName, email, course, yearLevel) {
   if (!studentId || !fullName || !email || !course || !yearLevel) {
     return { success: false, message: "All required fields must be filled in." };
+  }
+
+  if (!isTruthyValue(getSetting("registration_open", ADMIN_AUTH.DEFAULT_REGISTRATION_OPEN))) {
+    return { success: false, message: "Registration is currently closed. Please check back later." };
   }
 
   if (!email.toLowerCase().endsWith("@sjp2cd.edu.ph")) {
@@ -424,6 +432,7 @@ function getVoters(token) {
     success: true,
     election_active: isTruthyValue(electionActive),
     candidates_visible: isTruthyValue(getSetting("candidates_visible", true)),
+    registration_open: isTruthyValue(getSetting("registration_open", ADMIN_AUTH.DEFAULT_REGISTRATION_OPEN)),
     stats: { total, voted, not_voted: total - voted },
     registered_voters: registeredVoters,
     voters,
@@ -448,6 +457,16 @@ function setCandidatesVisibility(token, visible) {
   const val = (visible === "true" || visible === true);
   setSetting("candidates_visible", val);
   return { success: true, candidates_visible: val };
+}
+
+// ===== SET REGISTRATION STATUS (admin) =====
+function setRegistrationStatus(token, open) {
+  if (!isValidAdminToken(token)) {
+    return { success: false, message: "Unauthorized." };
+  }
+  const val = (open === "true" || open === true);
+  setSetting("registration_open", val);
+  return { success: true, registration_open: val };
 }
 
 // ===== VERIFY VOTER =====

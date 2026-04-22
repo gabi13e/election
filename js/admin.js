@@ -8,6 +8,7 @@ const ADMIN_STATE = {
   token: sessionStorage.getItem("adminToken") || null,
   electionActive: false,
   candidatesVisible: true,
+  registrationOpen: true,
   voters: [],
   activeTab: 'overview',
   voteAnalytics: null,
@@ -322,6 +323,7 @@ function loadAdminDashboard() {
       }
       ADMIN_STATE.electionActive = result.election_active;
       ADMIN_STATE.candidatesVisible = result.candidates_visible;
+      ADMIN_STATE.registrationOpen = result.registration_open !== false;
       ADMIN_STATE.voters = result.voters;
       renderDashboard(result);
     })
@@ -343,6 +345,7 @@ function renderDashboard(data) {
   document.getElementById('statNotVoted').textContent = data.stats.not_voted;
   updateStatusUI(data.election_active);
   updateCandidatesUI(data.candidates_visible !== false);
+  updateRegistrationUI(data.registration_open !== false);
   renderVotersTable(data.voters);
   renderRegisteredVotersTable(data.registered_voters || []);
   renderCandidatesList();
@@ -460,6 +463,29 @@ function updateCandidatesUI(isVisible) {
   }
 }
 
+function updateRegistrationUI(isOpen) {
+  const dot    = document.getElementById('adminRegistrationDot');
+  const label  = document.getElementById('adminRegistrationLabel');
+  const btnTxt = document.getElementById('adminRegistrationBtnText');
+  const btn    = document.getElementById('adminRegistrationBtn');
+
+  if (isOpen) {
+    dot.style.background = 'var(--success)';
+    dot.style.boxShadow  = '0 0 0 4px var(--success-glow)';
+    label.textContent    = 'Registration is OPEN';
+    label.style.color    = 'var(--success)';
+    btnTxt.textContent   = 'Close Registration';
+    btn.style.background = 'linear-gradient(135deg, var(--danger), #c0392b)';
+  } else {
+    dot.style.background = 'var(--danger)';
+    dot.style.boxShadow  = '0 0 0 4px var(--danger-glow)';
+    label.textContent    = 'Registration is CLOSED';
+    label.style.color    = 'var(--danger)';
+    btnTxt.textContent   = 'Open Registration';
+    btn.style.background = 'linear-gradient(135deg, var(--success), #1e8449)';
+  }
+}
+
 async function toggleCandidatesVisibility() {
   if (!ADMIN_STATE.token) return;
 
@@ -515,6 +541,69 @@ async function toggleCandidatesVisibility() {
         eyebrow: 'Candidates Page',
         title: 'Connection error',
         message: 'The candidates page setting could not be updated because the server did not respond.',
+        confirmText: 'Close',
+      });
+    })
+    .finally(() => {
+      btn.disabled = false;
+      spinner.classList.add('hidden');
+    });
+}
+
+async function toggleRegistrationStatus() {
+  if (!ADMIN_STATE.token) return;
+
+  const newStatus = !ADMIN_STATE.registrationOpen;
+  const confirmed = await openAdminActionModal({
+    tone: newStatus ? 'success' : 'danger',
+    toneLabel: newStatus ? 'Admissions' : 'Registration',
+    eyebrow: 'Voter Registration',
+    title: newStatus ? 'Open registration now?' : 'Close registration now?',
+    message: newStatus
+      ? 'Students will be able to submit new voter registrations immediately.'
+      : 'New voter registrations will be blocked until you open registration again.',
+    currentValue: ADMIN_STATE.registrationOpen ? 'Open' : 'Closed',
+    nextValue: newStatus ? 'Open' : 'Closed',
+    confirmText: newStatus ? 'Open Registration' : 'Close Registration',
+    cancelText: 'Keep Current Status',
+  });
+  if (!confirmed) return;
+
+  const btn     = document.getElementById('adminRegistrationBtn');
+  const spinner = document.getElementById('adminRegistrationSpinner');
+  btn.disabled  = true;
+  spinner.classList.remove('hidden');
+
+  fetch(CONFIG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'setRegistrationStatus', token: ADMIN_STATE.token, open: newStatus }),
+  })
+    .then(r => r.json())
+    .then(result => {
+      if (result.success) {
+        ADMIN_STATE.registrationOpen = result.registration_open;
+        updateRegistrationUI(result.registration_open);
+        STATE.registrationOpen = result.registration_open;
+        updateVotingUI();
+      } else {
+        showAdminNotice({
+          tone: 'danger',
+          toneLabel: 'Update Failed',
+          eyebrow: 'Voter Registration',
+          title: 'Registration setting was not updated',
+          message: explainAdminApiMessage(result.message),
+          confirmText: 'Close',
+        });
+      }
+    })
+    .catch(() => {
+      showAdminNotice({
+        tone: 'danger',
+        toneLabel: 'Offline',
+        eyebrow: 'Voter Registration',
+        title: 'Connection error',
+        message: 'The registration setting could not be updated because the server did not respond.',
         confirmText: 'Close',
       });
     })

@@ -83,6 +83,8 @@
               <div><h3>New Voter Registration</h3><p>Enter your information below</p></div>
             </div>
 
+            <div class="form-message" id="regStatusMessage" style="display:none;"></div>
+
             <div class="form-group">
               <label for="regStudentId">Student ID</label>
               <div class="input-wrapper">
@@ -182,6 +184,7 @@
   <script src="js/config.js"></script>
   <script>
     const ALLOWED_EMAIL_DOMAIN = CONFIG.ALLOWED_EMAIL_DOMAIN;
+    let REGISTRATION_OPEN = true;
 
     function showFieldError(id, msg) {
       const el = document.getElementById(id);
@@ -217,8 +220,50 @@
       return message;
     }
 
+    function setRegistrationAvailability(isOpen) {
+      REGISTRATION_OPEN = isOpen !== false;
+
+      const controls = document.querySelectorAll('#regStudentId, #regFullName, #regEmail, #regCourse, #regYearLevel');
+      controls.forEach(control => {
+        control.disabled = !REGISTRATION_OPEN;
+      });
+
+      const btn = document.getElementById('regBtn');
+      const btnText = document.getElementById('regBtnText');
+      if (btn) btn.disabled = !REGISTRATION_OPEN;
+      if (btnText) btnText.textContent = REGISTRATION_OPEN ? 'Register' : 'Registration Closed';
+
+      const statusMessage = document.getElementById('regStatusMessage');
+      if (!statusMessage) return;
+
+      if (REGISTRATION_OPEN) {
+        statusMessage.style.display = 'none';
+        statusMessage.textContent = '';
+        statusMessage.className = 'form-message';
+      } else {
+        statusMessage.textContent = 'Registration is currently closed by the admin. Please check back later.';
+        statusMessage.className = 'form-message error';
+        statusMessage.style.display = 'block';
+      }
+    }
+
+    async function loadRegistrationStatus() {
+      try {
+        const response = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=getElectionStatus`);
+        const result = await response.json();
+        setRegistrationAvailability(!(result.success && result.registration_open === false));
+      } catch (error) {
+        setRegistrationAvailability(true);
+      }
+    }
+
     function submitRegistration() {
       clearErrors();
+
+      if (REGISTRATION_OPEN === false) {
+        showFormMessage('regMessage', 'Registration is currently closed. Please check back later.', 'error');
+        return;
+      }
 
       const studentId = document.getElementById('regStudentId').value.trim();
       const fullName  = document.getElementById('regFullName').value.trim();
@@ -267,10 +312,14 @@
       const btn     = document.getElementById('regBtn');
       const text    = document.getElementById('regBtnText');
       const spinner = document.getElementById('regSpinner');
-      btn.disabled = isLoading;
-      text.textContent = isLoading ? 'Registering...' : 'Register';
+      btn.disabled = isLoading || REGISTRATION_OPEN === false;
+      text.textContent = isLoading ? 'Registering...' : (REGISTRATION_OPEN === false ? 'Registration Closed' : 'Register');
       spinner.classList.toggle('hidden', !isLoading);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRegistrationStatus();
+    });
   </script>
 </body>
 </html>

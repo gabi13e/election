@@ -75,6 +75,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
               <button class="btn-ghost" id="viewCandidatesBtn" onclick="handleViewCandidates()">View Candidates</button>
+              <button class="btn-ghost" type="button" id="registerNowBtn" onclick="handleRegisterNow()">Register</button>
             </div>
           </div><!-- end hero-text -->
 
@@ -428,6 +429,26 @@
             </div>
           </div>
 
+          <!-- Registration Control -->
+          <div class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h3>Registration</h3>
+                <p>Control whether students can submit new voter registrations.</p>
+              </div>
+            </div>
+            <div class="admin-status-row">
+              <div class="admin-status-indicator">
+                <span class="badge-dot" id="adminRegistrationDot"></span>
+                <span id="adminRegistrationLabel">Loading...</span>
+              </div>
+              <button class="btn-primary" id="adminRegistrationBtn" onclick="toggleRegistrationStatus()">
+                <span id="adminRegistrationBtnText">Loading...</span>
+                <div class="btn-spinner hidden" id="adminRegistrationSpinner"></div>
+              </button>
+            </div>
+          </div>
+
           <!-- Stats Row -->
           <div class="admin-stats-row">
             <div class="admin-stat-card">
@@ -621,7 +642,7 @@
           <li><a href="#" onclick="goToStep('stepLanding'); return false;">Home</a></li>
           <li><a href="#" id="footerCandidatesLink" onclick="handleViewCandidates(); return false;">View Candidates</a></li>
           <li><a href="#" onclick="goToStep('stepVerify'); return false;">Vote Now</a></li>
-          <li><a href="register.html">Register to Vote</a></li>
+          <li><a href="register.html" id="footerRegisterLink">Register to Vote</a></li>
         </ul>
       </div>
 
