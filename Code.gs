@@ -243,7 +243,8 @@ function doGet(e) {
         e.parameter.full_name,
         e.parameter.email,
         e.parameter.course,
-        e.parameter.year_level
+        e.parameter.year_level,
+        e.parameter.scholarship_type
       );
     } else {
       result = { success: false, message: "Unknown action." };
@@ -296,8 +297,8 @@ function doPost(e) {
 }
 
 // ===== REGISTER VOTER =====
-function registerVoter(studentId, fullName, email, course, yearLevel) {
-  if (!studentId || !fullName || !email || !course || !yearLevel) {
+function registerVoter(studentId, fullName, email, course, yearLevel, scholarshipType) {
+  if (!studentId || !fullName || !email || !course || !yearLevel || !scholarshipType) {
     return { success: false, message: "All required fields must be filled in." };
   }
 
@@ -346,7 +347,7 @@ function registerVoter(studentId, fullName, email, course, yearLevel) {
     school_email: email.trim().toLowerCase(),
     course: course.trim(),
     year_level: yearLevel.trim(),
-    scholarship_type: "",
+    scholarship_type: scholarshipType.trim(),
     eligible: true,
     has_voted: false,
     voted_at: "",
