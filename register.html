@@ -133,47 +133,20 @@
             <div class="form-group">
               <label>Scholarship Type</label>
               <p class="scholarship-help">Choose your scholarship type. If it is not listed, select <strong>Other / Specify</strong>.</p>
-              <div class="scholarship-options" id="regScholarshipOptions">
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="Academic" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">Academic</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="TDP-TES" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">TDP-TES</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="UNIFAST" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">UNIFAST</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="EBSU" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">EBSU</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="CMSP" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">CMSP</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="SINING TALA" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">SINING TALA</span>
-                </label>
-                <label class="scholarship-option">
-                  <input type="radio" name="regScholarshipType" value="VARSITY" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">VARSITY</span>
-                </label>
-                <label class="scholarship-option scholarship-option--other">
-                  <input type="radio" name="regScholarshipType" value="Other" onchange="handleScholarshipTypeChange()" />
-                  <span class="scholarship-option__control"></span>
-                  <span class="scholarship-option__label">Other / Specify</span>
-                </label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.6V15c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.4"/></svg>
+                <select id="regScholarshipType" onchange="handleScholarshipTypeChange()">
+                  <option value="">Select scholarship type</option>
+                  <option value="Academic">Academic</option>
+                  <option value="TDP-TES">TDP-TES</option>
+                  <option value="UNIFAST">UNIFAST</option>
+                  <option value="EBSU">EBSU</option>
+                  <option value="CMSP">CMSP</option>
+                  <option value="SINING TALA">SINING TALA</option>
+                  <option value="VARSITY">VARSITY</option>
+                  <option value="Other">Other / Specify</option>
+                </select>
+                <svg class="input-icon input-icon--right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div class="input-wrapper scholarship-other-input hidden" id="regScholarshipOtherWrap">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -248,9 +221,7 @@
 
     function clearErrors() {
       document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
-      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
-      const scholarshipOptions = document.getElementById('regScholarshipOptions');
-      if (scholarshipOptions) scholarshipOptions.classList.remove('error');
+      document.querySelectorAll('input, select').forEach(el => el.classList.remove('error'));
     }
 
     function showFormMessage(id, msg, type) {
@@ -277,7 +248,7 @@
     function setRegistrationAvailability(isOpen) {
       REGISTRATION_OPEN = isOpen !== false;
 
-      const controls = document.querySelectorAll('#regStudentId, #regFullName, #regEmail, #regCourse, #regYearLevel, input[name="regScholarshipType"], #regScholarshipOther');
+      const controls = document.querySelectorAll('#regStudentId, #regFullName, #regEmail, #regCourse, #regYearLevel, #regScholarshipType, #regScholarshipOther');
       controls.forEach(control => {
         control.disabled = !REGISTRATION_OPEN;
       });
@@ -304,13 +275,11 @@
     }
 
     function handleScholarshipTypeChange() {
-      const selected = document.querySelector('input[name="regScholarshipType"]:checked');
+      const selected = document.getElementById('regScholarshipType');
       const isOtherSelected = !!selected && selected.value === 'Other';
       const otherWrap = document.getElementById('regScholarshipOtherWrap');
       const otherInput = document.getElementById('regScholarshipOther');
-      const scholarshipOptions = document.getElementById('regScholarshipOptions');
-
-      if (scholarshipOptions) scholarshipOptions.classList.remove('error');
+      if (selected) selected.classList.remove('error');
 
       if (otherWrap) {
         otherWrap.classList.toggle('hidden', !isOtherSelected);
@@ -346,12 +315,12 @@
       const email     = document.getElementById('regEmail').value.trim().toLowerCase();
       const course    = document.getElementById('regCourse').value.trim();
       const yearLevel = document.getElementById('regYearLevel').value.trim();
-      const scholarshipChoice = document.querySelector('input[name="regScholarshipType"]:checked');
+      const scholarshipTypeSelect = document.getElementById('regScholarshipType');
+      const scholarshipChoice = scholarshipTypeSelect.value.trim();
       const scholarshipOther  = document.getElementById('regScholarshipOther').value.trim();
-      const scholarshipOptions = document.getElementById('regScholarshipOptions');
 
-      let scholarshipType = scholarshipChoice ? scholarshipChoice.value : '';
-      if (scholarshipType === 'Other') {
+      let scholarshipType = scholarshipChoice;
+      if (scholarshipChoice === 'Other') {
         scholarshipType = scholarshipOther;
       }
 
@@ -367,11 +336,10 @@
       if (!yearLevel) { showFieldError('regYearLevelError', 'Year level is required.'); hasError = true; }
       if (!scholarshipChoice) {
         document.getElementById('regScholarshipTypeError').textContent = 'Scholarship type is required.';
-        if (scholarshipOptions) scholarshipOptions.classList.add('error');
+        if (scholarshipTypeSelect) scholarshipTypeSelect.classList.add('error');
         hasError = true;
-      } else if (scholarshipChoice.value === 'Other' && !scholarshipOther) {
+      } else if (scholarshipChoice === 'Other' && !scholarshipOther) {
         document.getElementById('regScholarshipTypeError').textContent = 'Please specify your scholarship type.';
-        if (scholarshipOptions) scholarshipOptions.classList.add('error');
         document.getElementById('regScholarshipOther').classList.add('error');
         hasError = true;
       }
@@ -395,7 +363,7 @@
             showFormMessage('regMessage', result.message, 'success');
             ['regStudentId','regFullName','regEmail','regCourse','regYearLevel','regScholarshipOther']
               .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-            document.querySelectorAll('input[name="regScholarshipType"]').forEach(el => { el.checked = false; });
+            document.getElementById('regScholarshipType').value = '';
             handleScholarshipTypeChange();
           } else {
             showFormMessage('regMessage', explainRegistrationApiMessage(result.message), 'error');

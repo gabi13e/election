@@ -248,72 +248,16 @@ button.logo:active { transform: scale(.94); }
 .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 9px; text-transform: uppercase; letter-spacing: .8px; }
 .input-wrapper { position: relative; }
 .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); pointer-events: none; }
-.form-group input { width: 100%; padding: 13px 16px 13px 44px; background: var(--bg); border: none; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 14px; color: var(--text); box-shadow: var(--neu-inset); outline: none; transition: var(--transition); }
-.form-group input:focus { box-shadow: inset 3px 3px 8px var(--shadow-dark), inset -3px -3px 8px var(--shadow-light), 0 0 0 3px var(--primary-glow); }
+.input-icon--right { left: auto; right: 14px; }
+.form-group input,
+.form-group select { width: 100%; padding: 13px 16px 13px 44px; background: var(--bg); border: none; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 14px; color: var(--text); box-shadow: var(--neu-inset); outline: none; transition: var(--transition); }
+.form-group select { appearance: none; -webkit-appearance: none; padding-right: 44px; cursor: pointer; }
+.form-group input:focus,
+.form-group select:focus { box-shadow: inset 3px 3px 8px var(--shadow-dark), inset -3px -3px 8px var(--shadow-light), 0 0 0 3px var(--primary-glow); }
 .form-group input::placeholder { color: var(--text-light); }
-.form-group input.error { box-shadow: var(--neu-inset), 0 0 0 2px var(--danger-glow); }
+.form-group input.error,
+.form-group select.error { box-shadow: var(--neu-inset), 0 0 0 2px var(--danger-glow); }
 .scholarship-help { font-size: 12px; color: var(--text-muted); margin: -2px 0 12px; line-height: 1.6; }
-.scholarship-options { display: flex; flex-direction: column; gap: 10px; }
-.scholarship-options.error .scholarship-option { box-shadow: var(--neu-flat), 0 0 0 1px rgba(231,76,60,.24); }
-.scholarship-option {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--bg);
-  box-shadow: var(--neu-flat);
-  cursor: pointer;
-  transition: var(--transition);
-  margin-bottom: 0;
-  text-transform: none;
-  letter-spacing: 0;
-}
-.scholarship-option:hover { transform: translateY(-1px); box-shadow: var(--neu-raised); }
-.scholarship-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.scholarship-option__control {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--bg);
-  box-shadow: var(--neu-inset);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: var(--transition);
-}
-.scholarship-option__label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  transition: var(--transition);
-}
-.scholarship-option input:checked + .scholarship-option__control {
-  background: var(--primary);
-  box-shadow: inset 3px 3px 8px rgba(0,0,0,.08), 0 0 0 2px var(--primary-glow);
-}
-.scholarship-option input:checked + .scholarship-option__control::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-}
-.scholarship-option input:checked ~ .scholarship-option__label {
-  color: var(--primary-dark);
-}
 .scholarship-other-input { margin-top: 12px; }
 .field-error { display: block; font-size: 12px; color: var(--danger); margin-top: 6px; min-height: 16px; }
 .form-message { margin-bottom: 20px; border-radius: var(--radius-sm); padding: 13px 16px; font-size: 13px; display: none; }
