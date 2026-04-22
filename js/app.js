@@ -635,7 +635,7 @@ function updateVotingUI() {
       if (badge)     badge.classList.remove('election-badge--closed');
       if (badgeDot)  { badgeDot.style.background = ''; badgeDot.style.boxShadow = ''; badgeDot.style.animation = ''; }
       if (badgeText) badgeText.textContent = 'Election Now Open';
-      if (voteBtn)   { voteBtn.classList.remove('btn-primary--disabled'); voteBtn.title = ''; }
+      if (voteBtn)   { voteBtn.classList.remove('btn-primary--disabled'); voteBtn.removeAttribute('title'); }
     } else {
       if (badge)     badge.classList.add('election-badge--closed');
       if (badgeDot)  { badgeDot.style.background = 'var(--danger)'; badgeDot.style.boxShadow = '0 0 0 3px var(--danger-glow)'; badgeDot.style.animation = 'none'; }
@@ -666,6 +666,7 @@ function updateVotingUI() {
 }
 
 function handleVoteNow() {
+  if (STATE.electionActive === null) return; // still loading
   if (STATE.electionActive === false) {
     openElectionClosedModal();
   } else {
