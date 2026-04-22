@@ -918,18 +918,28 @@ function getTurnoutNarrative(turnoutPct, remaining) {
   return `Participation is still building. ${remaining} voter${remaining !== 1 ? 's remain' : ' remains'} unsubmitted right now.`;
 }
 
+function normalizeGroupLabel(raw) {
+  return String(raw)
+    .trim()
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .map(word => word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : word)
+    .join(' ');
+}
+
 function buildTurnoutGroups(voters, field, limit = 6) {
   const map = new Map();
 
   (voters || []).forEach(voter => {
     const raw = String(voter[field] || '').trim();
-    const label = raw || 'Not specified';
+    const label = raw ? normalizeGroupLabel(raw) : 'Not specified';
+    const key = label.toLowerCase();
 
-    if (!map.has(label)) {
-      map.set(label, { label, total: 0, voted: 0 });
+    if (!map.has(key)) {
+      map.set(key, { label, total: 0, voted: 0 });
     }
 
-    const entry = map.get(label);
+    const entry = map.get(key);
     entry.total += 1;
     if (isVoterMarkedAsVoted(voter)) {
       entry.voted += 1;

@@ -664,11 +664,10 @@ button.logo:active { transform: scale(.94); }
 /* ======= ADMIN MODE — hide site chrome ======= */
 body.admin-mode .site-header,
 body.admin-mode .site-footer { display: none !important; }
-body.admin-mode { overflow: hidden; }
-body.admin-mode #app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-#stepAdminDashboard { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+body.admin-mode #app { display: flex; flex-direction: column; min-height: 100vh; }
+#stepAdminDashboard { display: none; flex-direction: column; min-height: 100vh; }
 #stepAdminDashboard.active { display: flex; }
-body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
+body.admin-mode #stepAdminDashboard { flex: 1; }
 
 /* ======= ADMIN TOPBAR ======= */
 .admin-topbar {
@@ -681,6 +680,8 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
   justify-content: space-between;
   gap: 16px;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
   z-index: 50;
 }
 .admin-topbar-brand {
@@ -737,8 +738,6 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
   display: flex;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  height: 100%;
 }
 
 /* ======= ADMIN SIDEBAR ======= */
@@ -750,9 +749,10 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+  align-self: flex-start;
+  position: sticky;
+  top: 68px;
+  height: calc(100vh - 68px);
   z-index: 40;
 }
 
@@ -827,9 +827,7 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
 .admin-content {
   flex: 1;
   padding: 36px 40px 60px;
-  overflow-y: auto;
   min-width: 0;
-  min-height: 0;
 }
 
 /* ======= CANDIDATE LIST (admin) ======= */
@@ -952,6 +950,7 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
   .admin-sidebar {
     width: 100%;
     height: auto;
+    position: static;
     flex-direction: row;
     box-shadow: 0 3px 12px var(--shadow-dark), 0 1px 0 var(--shadow-light);
     overflow-y: hidden;
@@ -978,9 +977,6 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
   .admin-sidebar-item { white-space: nowrap; justify-content: flex-start; padding: 10px 14px; gap: 8px; }
   .admin-sidebar-item span { display: inline; font-size: 12px; }
   .admin-content { padding: 20px 16px 48px; }
-  #stepAdminDashboard.active,
-  body.admin-mode #app { height: auto; overflow: visible; }
-  body.admin-mode { overflow: auto; }
   .admin-body { min-height: 0; }
 }
 
@@ -1104,13 +1100,20 @@ body.admin-mode #stepAdminDashboard { flex: 1; min-height: 0; }
 }
 
 /* ======= ADMIN TABLE ======= */
-.admin-table-wrap { overflow-x: auto; padding: 0 4px 8px; }
+.admin-table-wrap {
+  overflow: auto;
+  max-height: 460px;
+  padding: 0 4px 8px;
+}
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 .admin-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   text-align: left;
   padding: 12px 16px;
   font-size: 11px;
