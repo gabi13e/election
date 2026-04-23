@@ -948,12 +948,40 @@ function normalizeGroupLabel(raw) {
     .join(' ');
 }
 
+function normalizeYearLevelLabel(raw) {
+  const lowered = String(raw || '').toLowerCase();
+  const match = lowered.match(/(\d+)(?:st|nd|rd|th)?/);
+  if (match) {
+    const n = parseInt(match[1], 10);
+    if (n >= 1 && n <= 10) {
+      const suffix = (n === 1) ? 'st' : (n === 2) ? 'nd' : (n === 3) ? 'rd' : 'th';
+      return `${n}${suffix} Year`;
+    }
+  }
+  const words = ['first', 'second', 'third', 'fourth', 'fifth'];
+  for (let i = 0; i < words.length; i++) {
+    if (lowered.includes(words[i])) {
+      const n = i + 1;
+      const suffix = (n === 1) ? 'st' : (n === 2) ? 'nd' : (n === 3) ? 'rd' : 'th';
+      return `${n}${suffix} Year`;
+    }
+  }
+  return null;
+}
+
 function buildTurnoutGroups(voters, field, limit = 6) {
   const map = new Map();
 
   (voters || []).forEach(voter => {
     const raw = String(voter[field] || '').trim();
-    const label = raw ? normalizeGroupLabel(raw) : 'Not specified';
+    let label;
+    if (!raw) {
+      label = 'Not specified';
+    } else if (field === 'year_level') {
+      label = normalizeYearLevelLabel(raw) || normalizeGroupLabel(raw);
+    } else {
+      label = normalizeGroupLabel(raw);
+    }
     const key = label.toLowerCase();
 
     if (!map.has(key)) {
