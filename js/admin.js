@@ -967,6 +967,17 @@ function normalizeGroupLabel(raw) {
     .join(' ');
 }
 
+function normalizeCourseLabel(raw) {
+  let s = String(raw || '').trim();
+  if (!s) return '';
+  s = s.split(/\s[-–—]\s/)[0];
+  s = s.replace(/\s+major\s+in\b.*/i, '');
+  s = s.replace(/\s+specializ(?:ing|ation)\b.*/i, '');
+  s = s.replace(/\s+track\b.*/i, '');
+  s = s.replace(/\s+with\s+specialization\b.*/i, '');
+  return s.trim();
+}
+
 function normalizeYearLevelLabel(raw) {
   const lowered = String(raw || '').toLowerCase();
   const match = lowered.match(/(\d+)(?:st|nd|rd|th)?/);
@@ -998,6 +1009,9 @@ function buildTurnoutGroups(voters, field, limit = 6) {
       label = 'Not specified';
     } else if (field === 'year_level') {
       label = normalizeYearLevelLabel(raw) || normalizeGroupLabel(raw);
+    } else if (field === 'course') {
+      const base = normalizeCourseLabel(raw);
+      label = base ? normalizeGroupLabel(base) : 'Not specified';
     } else {
       label = normalizeGroupLabel(raw);
     }
