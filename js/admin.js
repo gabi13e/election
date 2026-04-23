@@ -318,11 +318,25 @@ function setAdminLoginLoading(isLoading) {
 // ADMIN DASHBOARD
 // =====================================================
 
+function setAdminRefreshLoading(isLoading) {
+  const btn = document.getElementById('adminRefreshBtn');
+  if (!btn) return;
+  btn.disabled = !!isLoading;
+  btn.classList.toggle('is-loading', !!isLoading);
+  btn.style.opacity = isLoading ? '0.6' : '';
+  btn.style.cursor = isLoading ? 'wait' : '';
+  const svg = btn.querySelector('svg');
+  if (svg) svg.style.animation = isLoading ? 'adminSpin 0.9s linear infinite' : '';
+}
+
 function loadAdminDashboard() {
   if (!ADMIN_STATE.token) {
     goToStep('stepAdminLogin');
     return;
   }
+  if (ADMIN_STATE.isRefreshing) return;
+  ADMIN_STATE.isRefreshing = true;
+  setAdminRefreshLoading(true);
 
   fetch(CONFIG.APPS_SCRIPT_URL, {
     method: 'POST',
@@ -348,7 +362,8 @@ function loadAdminDashboard() {
       ADMIN_STATE.voters = result.voters;
       renderDashboard(result);
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error('loadAdminDashboard failed:', err);
       showAdminNotice({
         tone: 'danger',
         toneLabel: 'Offline',
@@ -357,6 +372,10 @@ function loadAdminDashboard() {
         message: 'The admin dashboard could not reach the server. Check your connection and try refresh again.',
         confirmText: 'Close',
       });
+    })
+    .finally(() => {
+      ADMIN_STATE.isRefreshing = false;
+      setAdminRefreshLoading(false);
     });
 }
 
@@ -1313,3 +1332,19 @@ if (ADMIN_STATE.token) {
     loadAdminDashboard();
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const refreshBtn = document.getElementById('adminRefreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      loadAdminDashboard();
+    });
+  }
+  if (!document.getElementById('adminSpinKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'adminSpinKeyframes';
+    style.textContent = '@keyframes adminSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  }
+});
